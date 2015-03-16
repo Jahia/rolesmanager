@@ -284,7 +284,10 @@ public class RolesAndPermissionsHandler implements Serializable {
             roleBean.setHidden(role.getProperty("j:hidden").getBoolean());
         }
 
-        String roleGroup = role.getProperty("j:roleGroup").getString();
+        String roleGroup = "edit-role";
+        if (role.hasProperty("j:roleGroup")) {
+            roleGroup = role.getProperty("j:roleGroup").getString();
+        }
 
         RoleType roleType = roleTypes.get(roleGroup);
         roleBean.setRoleType(roleType);
