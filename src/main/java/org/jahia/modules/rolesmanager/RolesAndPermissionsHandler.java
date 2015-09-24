@@ -913,7 +913,7 @@ public class RolesAndPermissionsHandler implements Serializable {
             @Override
             public int compare(JCRNodeWrapper o1, JCRNodeWrapper o2) {
                 if (getPermissionPath(o1).equals(getPermissionPath(o2))) {
-                    return -o1.getPath().compareTo(o2.getPath());
+                    return o2.getPath().compareTo(o1.getPath());
                 }
                 return getPermissionPath(o1).compareTo(getPermissionPath(o2));
             }
