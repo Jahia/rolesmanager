@@ -88,7 +88,7 @@ public class RoleBean implements Serializable {
 
     private String path;
 
-    private Map<String, I18nRoleProperties> i18nProperties;
+    private transient Map<String, I18nRoleProperties> i18nProperties;
 
     private boolean hidden = false;
 
@@ -100,7 +100,7 @@ public class RoleBean implements Serializable {
 
     private boolean isDirty = false;
 
-    private Map<String, Map<String, Map<String,PermissionBean>>> permissions;
+    private transient Map<String, Map<String, Map<String,PermissionBean>>> permissions;
     private List<RoleBean> subRoles;
 
 //    private Map<String, List<PermissionBean>> externalPermissions;

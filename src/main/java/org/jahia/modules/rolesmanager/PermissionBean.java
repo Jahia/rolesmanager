@@ -83,7 +83,7 @@ public class PermissionBean implements Serializable, Comparable<PermissionBean> 
     private String module;
     private String path;
     private String targetPath;
-    private Map<String, PermissionBean> mappedPermissions;
+    private transient Map<String, PermissionBean> mappedPermissions;
     private boolean mappedPermissionsExpanded;
     private boolean partialSet;
     private boolean set;

@@ -84,7 +84,7 @@ public class RoleType implements Serializable {
 
     private Set<String> scopes;
 
-    private Map<String,List<String>> permissionsGroups;
+    private transient Map<String,List<String>> permissionsGroups;
 
 
 
