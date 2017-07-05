@@ -43,14 +43,18 @@
  */
 package org.jahia.modules.rolesmanager;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public class RoleBean implements Serializable {
+
+    private static final long serialVersionUID = -5036022593209986899L;
 
     private String uuid;
 
@@ -58,7 +62,7 @@ public class RoleBean implements Serializable {
 
     private String name;
 
-    private String path;
+    private String[] pathElements;
 
     private Map<String, I18nRoleProperties> i18nProperties;
 
@@ -73,10 +77,8 @@ public class RoleBean implements Serializable {
     private boolean isDirty = false;
 
     private Map<String, Map<String, Map<String,PermissionBean>>> permissions;
+
     private List<RoleBean> subRoles;
-
-//    private Map<String, List<PermissionBean>> externalPermissions;
-
 
     public String getUuid() {
         return uuid;
@@ -94,12 +96,16 @@ public class RoleBean implements Serializable {
         this.name = name;
     }
 
+    public String[] getPathElements() {
+        return Arrays.copyOf(pathElements, pathElements.length);
+    }
+
     public String getPath() {
-        return path;
+        return '/' + StringUtils.join(pathElements, '/');
     }
 
     public void setPath(String path) {
-        this.path = path;
+        this.pathElements = StringUtils.split(path, '/');
     }
 
     public Map<String, I18nRoleProperties> getI18nProperties() {

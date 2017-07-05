@@ -69,10 +69,7 @@ public class RolesAndPermissionsHandler implements Serializable {
 
     private static final long serialVersionUID = 7910715831938629654L;
 
-    private static Logger logger = LoggerFactory.getLogger(RolesAndPermissionsHandler.class);
-
-//    enum Scope {CONTENT, SITE, SERVER_SETTINGS, STUDIO, JCR, OTHER};
-
+    private static final Logger logger = LoggerFactory.getLogger(RolesAndPermissionsHandler.class);
 
     @Autowired
     private transient RoleTypeConfiguration roleTypes;
@@ -114,16 +111,16 @@ public class RolesAndPermissionsHandler implements Serializable {
     }
 
     public Map<String, List<RoleBean>> getRoles() throws RepositoryException {
-        return getRoles(false,false);
+        return getRoles(false, false);
     }
 
     public Map<String, List<RoleBean>> getRolesToDelete() throws RepositoryException {
-        return getRoles(true,true);
+        return getRoles(true, true);
     }
 
 
     public Map<String, List<RoleBean>> getSelectedRoles() throws RepositoryException {
-        return getRoles(true,false);
+        return getRoles(true, false);
     }
 
     public Map<String, List<RoleBean>> getRoles(boolean filterUUIDs, boolean getChildren) throws RepositoryException {
@@ -167,8 +164,22 @@ public class RolesAndPermissionsHandler implements Serializable {
         for (List<RoleBean> roleBeans : all.values()) {
             Collections.sort(roleBeans, new Comparator<RoleBean>() {
                 @Override
-                public int compare(RoleBean o1, RoleBean o2) {
-                    return o1.getPath().compareTo(o2.getPath());
+                public int compare(RoleBean role1, RoleBean role2) {
+                    String[] path1 = role1.getPathElements();
+                    String[] path2 = role2.getPathElements();
+                    for (int i = 0; true; i++) {
+                        if (i == path1.length && i == path2.length) {
+                            return 0;
+                        } else if (i == path1.length) {
+                            return -1;
+                        } else if (i == path2.length) {
+                            return 1;
+                        }
+                        int result = path1[i].compareTo(path2[i]);
+                        if (result != 0) {
+                            return result;
+                        }
+                    }
                 }
             });
         }
@@ -297,10 +308,10 @@ public class RolesAndPermissionsHandler implements Serializable {
                         includeSubtypes = true;
                     }
                     ExtendedNodeType t = NodeTypeRegistry.getInstance().getNodeType(s);
-                    nodeTypes.add(new NodeType(t.getName(),t.getLabel(LocaleContextHolder.getLocale()),nodeTypesOnRole.contains(t.getName())));
+                    nodeTypes.add(new NodeType(t.getName(), t.getLabel(LocaleContextHolder.getLocale()), nodeTypesOnRole.contains(t.getName())));
                     if (includeSubtypes) {
                         for (ExtendedNodeType sub : t.getSubtypesAsList()) {
-                            nodeTypes.add(new NodeType(sub.getName(),sub.getLabel(LocaleContextHolder.getLocale()),nodeTypesOnRole.contains(sub.getName())));
+                            nodeTypes.add(new NodeType(sub.getName(), sub.getLabel(LocaleContextHolder.getLocale()), nodeTypesOnRole.contains(sub.getName())));
                         }
                     }
                 }
@@ -402,7 +413,7 @@ public class RolesAndPermissionsHandler implements Serializable {
         JCRSessionWrapper currentUserSession = getSession();
 
         roleName = StringUtils.isNotEmpty(roleName) ? JCRContentUtils.generateNodeName(roleName) : roleName;
-        if(!testRoleName(roleName, messageContext, currentUserSession)){
+        if (!testRoleName(roleName, messageContext, currentUserSession)) {
             return false;
         }
 
@@ -467,7 +478,7 @@ public class RolesAndPermissionsHandler implements Serializable {
         } else {
             if (scope.equals("currentSite")) {
                 type = "jnt:virtualsite";
-            } else if(scope.startsWith("/")) {
+            } else if (scope.startsWith("/")) {
                 try {
                     type = getSession().getNode(scope).getPrimaryNodeTypeName();
                 } catch (PathNotFoundException e) {
