@@ -208,29 +208,47 @@ public class RolesAndPermissionsHandler implements Serializable {
                 }
 
                 boolean copy = roleToCopy.copy(roleToCopy.getParent().getPath(), newRoleName);
-                if (StringUtils.isEmpty(deepCopy)) {
-                    JCRNodeWrapper copiedNode = session.getNode(roleToCopy.getParent().getPath() + "/" + newRoleName);
-                    NodeIterator iterator = copiedNode.getNodes();
-                    while (iterator.hasNext()) {
-                        JCRNodeWrapper subNode = (JCRNodeWrapper) iterator.next();
-                        if (subNode.isNodeType("jnt:role")) {
+                JCRNodeWrapper copiedNode = session.getNode(roleToCopy.getParent().getPath() + "/" + newRoleName);
+                NodeIterator iterator = copiedNode.getNodes();
+                boolean copyWithSubRoles = StringUtils.isNotEmpty(deepCopy);
+                while (iterator.hasNext()) {
+                    JCRNodeWrapper subNode = (JCRNodeWrapper) iterator.next();
+                    if (subNode.isNodeType("jnt:role")) {
+                        if (copyWithSubRoles) {
+                            renameSubRole(subNode, newRoleName);
+                        } else {
                             subNode.remove();
                         }
                     }
                 }
 
                 session.save();
+
+                if (copy) {
+                    messageContext.addMessage(new MessageBuilder().source("roleName")
+                            .info()
+                            .code("rolesmanager.rolesAndPermissions.successfullyCopied")
+                            .args(roleToCopy.getName(), newRoleName)
+                            .build());
+                }
+
                 return copy;
             }
         });
 
-        if (copy) {
-            messageContext.addMessage(new MessageBuilder().source("roleName")
-                    .defaultText(getMessage("rolesmanager.rolesAndPermissions.successfullyCopied"))
-                    .build());
-        }
-
         return copy;
+    }
+
+    protected void renameSubRole(JCRNodeWrapper subNode, String newRoleName) throws RepositoryException {
+        String newSubRoleName = newRoleName + '-' + subNode.getName();
+        boolean exists = roleExists(newSubRoleName, subNode.getSession());
+        int i = 2;
+        while (exists) {
+            newSubRoleName = newRoleName + '-' + subNode.getName() + '-' + i;
+            exists = roleExists(newSubRoleName, subNode.getSession());
+            i++;
+        }
+        subNode.rename(newSubRoleName);
     }
 
     private RoleBean createRoleBean(JCRNodeWrapper role, boolean getPermissions, boolean getSubRoles) throws RepositoryException {
@@ -389,24 +407,31 @@ public class RolesAndPermissionsHandler implements Serializable {
     private boolean testRoleName(String roleName, MessageContext messageContext, JCRSessionWrapper currentUserSession) throws RepositoryException {
         if (StringUtils.isEmpty(roleName)) {
             messageContext.addMessage(new MessageBuilder().source("roleName")
-                    .defaultText(getMessage("rolesmanager.rolesAndPermissions.role.noName"))
                     .error()
+                    .code("rolesmanager.rolesAndPermissions.role.noName")
                     .build());
             return false;
         }
 
-        NodeIterator nodes = currentUserSession.getWorkspace().getQueryManager().createQuery(
-                "select * from [" + Constants.JAHIANT_ROLE + "] as r where localname()='" + JCRContentUtils.sqlEncode(roleName) + "' and isdescendantnode(r,['/roles'])",
-                        Query.JCR_SQL2).execute().getNodes();
-        if (nodes.hasNext()) {
+        if (roleExists(roleName, currentUserSession)) {
             messageContext.addMessage(new MessageBuilder().source("roleName")
-                    .defaultText(getMessage("rolesmanager.rolesAndPermissions.role.exists"))
                     .error()
+                    .code("rolesmanager.rolesAndPermissions.role.exists")
                     .build());
             return false;
         }
 
         return true;
+    }
+
+    private boolean roleExists(String roleName, JCRSessionWrapper currentUserSession) throws RepositoryException {
+        NodeIterator nodes = currentUserSession.getWorkspace().getQueryManager()
+                .createQuery(
+                        "select * from [" + Constants.JAHIANT_ROLE + "] as r where localname()='"
+                                + JCRContentUtils.sqlEncode(roleName) + "' and isdescendantnode(r,['/roles'])",
+                        Query.JCR_SQL2)
+                .execute().getNodes();
+        return nodes.hasNext();
     }
 
     public boolean addRole(String roleName, String parentRoleId, String roleTypeString, MessageContext messageContext) throws RepositoryException {
@@ -982,10 +1007,6 @@ public class RolesAndPermissionsHandler implements Serializable {
             }
 
         }
-    }
-
-    private String getMessage(String key) {
-        return Messages.get("resources.JahiaRolesManager", key, LocaleContextHolder.getLocale());
     }
 
     public Map<String, String> getAvailableLanguages() throws RepositoryException {

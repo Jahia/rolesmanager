@@ -8,13 +8,26 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%--@elvariable id="flowRequestContext" type="org.springframework.webflow.execution.RequestContext"--%>
 <%--@elvariable id="handler" type="org.jahia.modules.rolesmanager.RolesAndPermissionsHandler"--%>
-<template:addResources type="javascript" resources="jquery.min.js,jquery-ui.min.js,jquery.blockUI.js,workInProgress.js,admin-bootstrap.js"/>
+<template:addResources type="javascript" resources="jquery.min.js,jquery-ui.min.js,jquery.blockUI.js,workInProgress.js,admin-bootstrap.js,bootbox.min.js"/>
 <template:addResources type="css" resources="jquery-ui.smoothness.css,jquery-ui.smoothness-jahia.css"/>
 <fmt:message key="label.workInProgressTitle" var="i18nWaiting"/><c:set var="i18nWaiting" value="${functions:escapeJavaScript(i18nWaiting)}"/>
+<fmt:message var="i18nDeepCopy" key="rolesmanager.rolesAndPermissions.deepCopy"/>
+<fmt:message var="i18nHelp" key="rolesmanager.rolesAndPermissions.deepCopy.help"/>
+<fmt:message var="i18nDeepCopyHelp" key="rolesmanager.rolesAndPermissions.deepCopy.description"/>
 <template:addResources>
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#rolename').focus();
+            $('#newRole').focus();
+            $('#newRole').select();
+            $('#newRole').click(function() {
+                $(this).select();
+            });
+            $('#copySubRolesHelp').click(function () {
+                bootbox.alert({
+                    title: '${functions:escapeJavaScript(i18nDeepCopy)}',
+                    message: '${functions:escapeJavaScript(i18nDeepCopyHelp)}'
+                });
+            });
         })
     </script>
 </template:addResources>
@@ -38,17 +51,20 @@
                     <div class="row-fluid">
                         <div class="span4">
                             <label for="newRole"><fmt:message key="label.name"/> <span class="text-error"><strong>*</strong></span></label>
-                            <input type="text" name="newRole" class="span12" id="newRole"/>
+                            <input type="text" name="newRole" class="span12" id="newRole" value="${fn:escapeXml(handler.roleBean.name)}-copy"/>
                         </div>
                     </div>
 
-                    <div class="row-fluid">
-                        <div class="span4">
-                            <label for="deepCopy" class="checkbox">
-                                <input type="checkbox" name="deepCopy" id="deepCopy" checked="checked"> <fmt:message key="rolesmanager.rolesAndPermissions.deepCopy"/>
-                            </label>
-                        </div>
-                    </div>
+                    <c:if test="${fn:length(handler.roleBean.subRoles) > 0}">
+	                    <div class="row-fluid">
+	                        <div class="span4">
+	                            <label for="deepCopy" class="checkbox">
+	                                <input type="checkbox" name="deepCopy" id="deepCopy" checked="checked"> ${fn:escapeXml(i18nDeepCopy)}
+	                                <a id="copySubRolesHelp" title="${fn:escapeXml(i18nHelp)}" href="#copySubRolesHelp"><img src="<c:url value='/icons/help.png'/>" width="16" height="16" alt="${fn:escapeXml(i18nHelp)}"></a>
+	                            </label>
+	                        </div>
+	                    </div>
+                    </c:if>
                 </div>
             </fieldset>
 
