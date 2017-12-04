@@ -13,7 +13,8 @@
 <template:addResources type="css" resources="jquery-ui.smoothness.css,jquery-ui.smoothness-jahia.css,rolesmanager.css"/>
 <jsp:useBean id="nowDate" class="java.util.Date"/>
 <fmt:formatDate value="${nowDate}" pattern="yyyy-MM-dd-HH-mm" var="now"/>
-<fmt:message key="label.workInProgressTitle" var="i18nWaiting"/><c:set var="i18nWaiting" value="${functions:escapeJavaScript(i18nWaiting)}"/>
+<fmt:message key="label.workInProgressTitle" var="i18nWaiting"/><c:set var="i18nWaiting"
+                                                                       value="${functions:escapeJavaScript(i18nWaiting)}"/>
 <template:addResources>
     ${copiedRole}
     <script type="text/javascript">
@@ -28,6 +29,7 @@
 
         var addRoleLabel = '<fmt:message key="rolesmanager.rolesAndPermissions.role.add" />';
         var addSubRoleLabel = '<fmt:message key="rolesmanager.rolesAndPermissions.subRole.add" />';
+
         function checkRole() {
             var uuids = getUuids();
             var roleTypeCombo = $('#roleTypeCombo');
@@ -48,7 +50,7 @@
                 if (!deleteRolesButton.hasClass("disabled")) {
                     deleteRolesButton.addClass("disabled");
                     deleteRolesButton.attr("disabled", "disabled");
-                 }
+                }
             } else {
                 if (deleteRolesButton.hasClass("disabled")) {
                     deleteRolesButton.removeClass("disabled");
@@ -89,37 +91,41 @@
     <h2><fmt:message key="rolesmanager.rolesAndPermissions"/></h2>
 </div>
 <div class="panel panel-default panel-pdg">
-    <p>
-        <c:forEach var="msg" items="${flowRequestContext.messageContext.allMessages}">
-            <div class="alert ${msg.severity == 'ERROR' ? 'validationError' : ''} ${msg.severity == 'ERROR' ? 'alert-error' : 'alert-success'}">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    ${fn:escapeXml(msg.text)}
-            </div>
-        </c:forEach>
-    </p>
-   <div>
+<p>
+<c:forEach var="msg" items="${flowRequestContext.messageContext.allMessages}">
+    <div class="alert ${msg.severity == 'ERROR' ? 'validationError' : ''} ${msg.severity == 'ERROR' ? 'alert-error' : 'alert-success'}">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+            ${fn:escapeXml(msg.text)}
+    </div>
+</c:forEach>
+</p>
+<div>
     <fieldset>
-        <form style="margin: 0;" action="${flowExecutionUrl}" method="POST" id="roleForm" class="form-inline" onsubmit="setRoleType()">
-        <select id="roleTypeCombo" class="form-control">
-            <c:forEach items="${handler.roleTypes.values}" var="roleType">
-                <option value="${roleType.name}">
-                <fmt:message key="rolesmanager.rolesAndPermissions.roleType.${fn:replace(roleType.name,'-','_')}"/>
-                </option>
-            </c:forEach>
-        </select>
-        <input type="hidden" id="roleType" name="roleType"/>
-        <input type="text" id="addRoleField" class="form-control" name="newRole"/>
-        <input type="hidden" id="uuid" name="uuid"/>
-        <input type="hidden" id="eventId" name="_eventId" value="addRole" />
-        <button class="btn btn-primary btn-align" type="submit">
-            <i class="icon-plus  icon-white"></i>
-            <span id="addRoleButtonLabel"><fmt:message key="rolesmanager.rolesAndPermissions.role.add" /></span>
-        </button>
-            <button id="deleteRolesButton" class="btn btn-danger disabled btn-align" type="button" onclick="deleteRoles()"
-                    disabled="disabled">
-                <i class="icon-remove icon-white"></i>
-                <fmt:message key="rolesmanager.rolesAndPermissions.role.delete" />
-            </button>
+        <form style="margin: 0;" action="${flowExecutionUrl}" method="POST" id="roleForm" class="form-inline"
+              onsubmit="setRoleType()">
+                <select id="roleTypeCombo" class="form-control">
+                    <c:forEach items="${handler.roleTypes.values}" var="roleType">
+                        <option value="${roleType.name}">
+                            <fmt:message
+                                    key="rolesmanager.rolesAndPermissions.roleType.${fn:replace(roleType.name,'-','_')}"/>
+                        </option>
+                    </c:forEach>
+                </select>
+                <input type="hidden" id="roleType" name="roleType"/>
+                <fmt:message key="rolesmanager.rolesAndPermissions.role.add.name" var="addRoleLabel"/>
+                <input type="text" id="addRoleField" class="form-control" name="newRole" placeholder="${addRoleLabel}"/>
+                <input type="hidden" id="uuid" name="uuid"/>
+                <input type="hidden" id="eventId" name="_eventId" value="addRole"/>
+                <button class="btn btn-primary btn-align" type="submit">
+                    <i class="icon-plus  icon-white"></i>
+                    <span id="addRoleButtonLabel"><fmt:message key="rolesmanager.rolesAndPermissions.role.add"/></span>
+                </button>
+                <button id="deleteRolesButton" class="btn btn-danger disabled btn-align" type="button"
+                        onclick="deleteRoles()"
+                        disabled="disabled">
+                    <i class="icon-remove icon-white"></i>
+                    <fmt:message key="rolesmanager.rolesAndPermissions.role.delete"/>
+                </button>
         </form>
     </fieldset>
 </div>
@@ -128,7 +134,7 @@
 <c:forEach items="${roles}" var="entry" varStatus="loopStatus">
     <fieldset>
 
-           <h3><fmt:message key="rolesmanager.rolesAndPermissions.roleType.${fn:replace(entry.key,'-','_')}"/></h3>
+        <h3><fmt:message key="rolesmanager.rolesAndPermissions.roleType.${fn:replace(entry.key,'-','_')}"/></h3>
 
         <table class="table table-hover table-striped">
             <thead>
@@ -148,36 +154,36 @@
 
             <tbody>
 
-                <c:forEach items="${entry.value}" var="role" varStatus="loopStatus2">
-                    <tr>
-                        <td>
-                            <div class="checkbox">
-                                <label>
-                                    <input id="${role.uuid}" name="selectedRoles" class="roleCheckbox" type="checkbox"
-                                           value="${role.uuid}"
-                                           roleType="${entry.key}" onchange="checkRole()"/>
-                                    <span class="checkbox-material"></span>
-                                </label>
-                            </div>
-                        </td>
-                        <td>
-                            <c:forEach var="i" begin="3" end="${role.depth}" step="1" varStatus="loopStatus3">
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            </c:forEach>
-                            <strong><a href="#" onclick="viewRole('${role.uuid}')">${role.title} (${role.name})</a></strong>
-                        </td>
-                        <td>
-                            ${role.description}
-                        </td>
-                        <td>
-                            <a style="margin-bottom:0;" class="btn btn-primary btn-xs" href="#copy"
-                               onclick="copyRole('${role.uuid}');">${i18nCopy}</a>
-                        </td>
-                    </tr>
-                </c:forEach>
-            </div>
-            </tbody>
-        </table>
+            <c:forEach items="${entry.value}" var="role" varStatus="loopStatus2">
+            <tr>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            <input id="${role.uuid}" name="selectedRoles" class="roleCheckbox" type="checkbox"
+                                   value="${role.uuid}"
+                                   roleType="${entry.key}" onchange="checkRole()"/>
+                            <span class="checkbox-material"></span>
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <c:forEach var="i" begin="3" end="${role.depth}" step="1" varStatus="loopStatus3">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </c:forEach>
+                    <strong><a href="#" onclick="viewRole('${role.uuid}')">${role.title} (${role.name})</a></strong>
+                </td>
+                <td>
+                        ${role.description}
+                </td>
+                <td>
+                    <a style="margin-bottom:0;" class="btn btn-primary btn-xs" href="#copy"
+                       onclick="copyRole('${role.uuid}');">${i18nCopy}</a>
+                </td>
+            </tr>
+            </c:forEach>
+    </div>
+    </tbody>
+    </table>
 
     </fieldset>
 </c:forEach>
