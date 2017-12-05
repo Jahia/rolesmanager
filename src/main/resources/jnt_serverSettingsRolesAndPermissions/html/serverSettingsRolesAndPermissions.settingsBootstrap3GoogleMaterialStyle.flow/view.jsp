@@ -162,7 +162,7 @@
                             <input id="${role.uuid}" name="selectedRoles" class="roleCheckbox" type="checkbox"
                                    value="${role.uuid}"
                                    roleType="${entry.key}" onchange="checkRole()"/>
-                            <span class="checkbox-material"></span>
+
                         </label>
                     </div>
                 </td>
