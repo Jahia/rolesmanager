@@ -38,7 +38,7 @@
     <div class="panel panel-default panel-pdg">
         <p>
             <c:forEach var="msg" items="${flowRequestContext.messageContext.allMessages}">
-                <div class="alert ${msg.severity == 'ERROR' ? 'validationError' : ''} ${msg.severity == 'ERROR' ? 'alert-error' : 'alert-success'}">
+                <div class="alert ${msg.severity == 'ERROR' ? 'validationError' : ''} ${msg.severity == 'ERROR' ? ' alert-danger' : ' alert-success'}">
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
                         ${fn:escapeXml(msg.text)}
                 </div>
@@ -76,18 +76,14 @@
                 </fieldset>
 
                 <fieldset>
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-sm-4 col-sm-offset-3 col-md-4 col-md-offset-3">
-                                <button class="btn btn-primary" type="submit" name="_eventId_copy" onclick="workInProgress('${i18nWaiting}'); return true;">
-                                    &nbsp;<fmt:message key="label.copy"/>
-                                </button>
-                                <button class="btn btn-primary" type="submit" name="_eventId_cancel">
-                                    &nbsp;<fmt:message key="label.cancel"/>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                  <div class="row">
+                    <button class="btn btn-primary pull-right" type="submit" name="_eventId_copy" onclick="workInProgress('${i18nWaiting}'); return true;">
+                      &nbsp;<fmt:message key="label.copy"/>
+                    </button>
+                    <button class="btn btn-primary pull-right" type="submit" name="_eventId_cancel">
+                      &nbsp;<fmt:message key="label.cancel"/>
+                    </button>
+                  </div>
                 </fieldset>
             </form>
         </div>

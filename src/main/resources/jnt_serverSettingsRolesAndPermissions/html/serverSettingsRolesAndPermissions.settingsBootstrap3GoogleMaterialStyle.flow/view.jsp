@@ -93,7 +93,7 @@
 <div class="panel panel-default panel-pdg">
 <p>
 <c:forEach var="msg" items="${flowRequestContext.messageContext.allMessages}">
-    <div class="alert ${msg.severity == 'ERROR' ? 'validationError' : ''} ${msg.severity == 'ERROR' ? 'alert-error' : 'alert-success'}">
+    <div class="alert ${msg.severity == 'ERROR' ? 'validationError' : ''} ${msg.severity == 'ERROR' ? ' alert-danger' : ' alert-success'}">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
             ${fn:escapeXml(msg.text)}
     </div>
@@ -117,13 +117,11 @@
                 <input type="hidden" id="uuid" name="uuid"/>
                 <input type="hidden" id="eventId" name="_eventId" value="addRole"/>
                 <button class="btn btn-primary btn-align" type="submit">
-                    <i class="icon-plus  icon-white"></i>
                     <span id="addRoleButtonLabel"><fmt:message key="rolesmanager.rolesAndPermissions.role.add"/></span>
                 </button>
                 <button id="deleteRolesButton" class="btn btn-danger disabled btn-align" type="button"
                         onclick="deleteRoles()"
                         disabled="disabled">
-                    <i class="icon-remove icon-white"></i>
                     <fmt:message key="rolesmanager.rolesAndPermissions.role.delete"/>
                 </button>
         </form>
@@ -176,8 +174,9 @@
                         ${role.description}
                 </td>
                 <td>
-                    <a style="margin-bottom:0;" class="btn btn-primary btn-xs" href="#copy"
-                       onclick="copyRole('${role.uuid}');">${i18nCopy}</a>
+                       <button data-toggle="tooltip" data-placement="left" title="${i18nCopy}" class="btn btn-fab btn-fab-xs btn-info" type="button" onclick="copyRole('${role.uuid}');">
+                           <i class="material-icons">content_copy</i>
+                       </button>
                 </td>
             </tr>
             </c:forEach>
