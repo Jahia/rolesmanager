@@ -150,6 +150,11 @@
                     <value>/permissions/repository-permissions/jcr:all_default</value>
                 </list>
             </entry>
+            <entry key="/permissions/repository-default/jcr:allBasicPermissions/jcr-mapped:access">
+                <list>
+                    <value>/permissions/repository-permissions/jcr:all_default/api-access</value>
+                </list>
+            </entry>
             <entry key="/permissions/repository-default/jcr:allBasicPermissions/jcr-mapped:read">
                 <list>
                     <value>/permissions/repository-permissions/jcr:all_default/jcr:read_default</value>
