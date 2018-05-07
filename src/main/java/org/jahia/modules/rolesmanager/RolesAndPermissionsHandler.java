@@ -64,12 +64,17 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import java.io.Serializable;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class RolesAndPermissionsHandler implements Serializable {
 
     private static final long serialVersionUID = 7910715831938629654L;
 
     private static final Logger logger = LoggerFactory.getLogger(RolesAndPermissionsHandler.class);
+    
+    private static final Pattern PATTERN_UNDERSCORE_DASH = Pattern.compile("[_-]");
+
+    private static final Pattern PATTERN_UPPERCASE_LETTER = Pattern.compile("([A-Z])");
 
     @Autowired
     private transient RoleTypeConfiguration roleTypes;
@@ -545,14 +550,7 @@ public class RolesAndPermissionsHandler implements Serializable {
                 bean.setUuid(null);
                 bean.setParentPath(StringUtils.substringBeforeLast(entry.getKey(), "/"));
                 bean.setName(StringUtils.substringAfterLast(entry.getKey(), "/"));
-                String localName = StringUtils.substringAfterLast(entry.getKey(), "/");
-                if (localName.contains(":")) {
-                    localName = StringUtils.substringAfter(localName, ":");
-                }
-                String title = StringUtils.capitalize(localName.replaceAll("([A-Z])", " $0").replaceAll("[_-]", " ").toLowerCase());
-                final String rbName = localName.replaceAll("-", "_");
-                bean.setTitle(Messages.getInternal("label.permission." + rbName, LocaleContextHolder.getLocale(), title));
-                bean.setDescription(Messages.getInternal("label.permission." + rbName + ".description", LocaleContextHolder.getLocale(), ""));
+                populateTitleAndDescription(bean);
                 bean.setPath(entry.getKey());
                 bean.setDepth(splitPath.length - 1);
                 bean.setMappedPermissions(new TreeMap<String, PermissionBean>());
@@ -704,21 +702,33 @@ public class RolesAndPermissionsHandler implements Serializable {
 
         bean.setParentPath(getPermissionPath(permissionNode.getParent()));
         bean.setName(permissionNode.getName());
-        String localName = permissionNode.getName();
+        bean.setModule(module);
+        populateTitleAndDescription(bean);
+        bean.setPath(getPermissionPath(permissionNode));
+        bean.setDepth(getPermissionDepth(permissionNode));
+    }
+
+    private void populateTitleAndDescription(PermissionBean bean) {
+        String localName = bean.getName().contains(":") ? StringUtils.substringAfter(bean.getName(), ":") : bean.getName(); 
         if (localName.contains(":")) {
             localName = StringUtils.substringAfter(localName, ":");
         }
-        String title = StringUtils.capitalize(localName.replaceAll("([A-Z])", " $0").replaceAll("[_-]", " ").toLowerCase());
+        String title = StringUtils.capitalize(PATTERN_UNDERSCORE_DASH.matcher(PATTERN_UPPERCASE_LETTER.matcher(localName).replaceAll(" $0")).replaceAll(" ").toLowerCase());
         final String rbName = localName.replaceAll("-", "_");
-        if (module != null) {
-            bean.setTitle(Messages.get(templateManagerService.getTemplatePackageById(module), "label.permission." + rbName, LocaleContextHolder.getLocale(), title));
+        Locale locale = LocaleContextHolder.getLocale();
+        String rbKey = "label.permission." + rbName;
+        String internalTitle = Messages.getInternal(rbKey, locale, title);
+        if (bean.getModule() != null) {
+            bean.setTitle(Messages.get(templateManagerService.getTemplatePackageById(bean.getModule()), rbKey, locale, internalTitle));
         } else {
-            bean.setTitle(Messages.getInternal("label.permission." + rbName, LocaleContextHolder.getLocale(), title));
+            bean.setTitle(internalTitle);
         }
-        bean.setModule(module);
-        bean.setDescription(Messages.getInternal("label.permission." + rbName + ".description", LocaleContextHolder.getLocale(), ""));
-        bean.setPath(getPermissionPath(permissionNode));
-        bean.setDepth(getPermissionDepth(permissionNode));
+        String internalDescription = Messages.getInternal(rbKey + ".description", locale, "");
+        if (bean.getModule() != null) {
+            bean.setDescription(Messages.get(templateManagerService.getTemplatePackageById(bean.getModule()), rbKey + ".description", locale, internalDescription));
+        } else {
+            bean.setDescription(internalDescription);
+        }
     }
 
     public String getCurrentContext() {
