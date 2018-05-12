@@ -76,6 +76,8 @@ public class RolesAndPermissionsHandler implements Serializable {
 
     private static final Pattern PATTERN_UPPERCASE_LETTER = Pattern.compile("([A-Z])");
 
+    private static final String OTHER_PERMISSIONS_GROUP_MAME= "other";
+
     @Autowired
     private transient RoleTypeConfiguration roleTypes;
 
@@ -530,6 +532,8 @@ public class RolesAndPermissionsHandler implements Serializable {
                 permissions.get(scope).put(s, new TreeMap<String, PermissionBean>());
             }
         }
+        // Add "other" group that will contain all permissions outside the current group list
+        permissions.get(scope).put(OTHER_PERMISSIONS_GROUP_MAME, new TreeMap<String, PermissionBean>());
 
         Map<String, PermissionBean> mappedPermissions = new HashMap<String, PermissionBean>();
 
@@ -544,25 +548,24 @@ public class RolesAndPermissionsHandler implements Serializable {
         for (Map.Entry<String, List<String>> entry : roleTypes.getPermissionsMapping().entrySet()) {
             String[] splitPath = entry.getKey().split("/");
             String permissionGroup = splitPath[2];
-            if (allGroups.containsKey(permissionGroup)) {
-                Map<String, PermissionBean> p = permissions.get(scope).get(allGroups.get(permissionGroup));
-                PermissionBean bean = new PermissionBean();
-                bean.setUuid(null);
-                bean.setParentPath(StringUtils.substringBeforeLast(entry.getKey(), "/"));
-                bean.setName(StringUtils.substringAfterLast(entry.getKey(), "/"));
-                populateTitleAndDescription(bean);
-                bean.setPath(entry.getKey());
-                bean.setDepth(splitPath.length - 1);
-                bean.setMappedPermissions(new TreeMap<String, PermissionBean>());
-                if (p.containsKey(bean.getParentPath())) {
-                    p.get(bean.getParentPath()).setHasChildren(true);
-                }
+            String groupKey = getGroupKey(allGroups, permissionGroup);
+            Map<String, PermissionBean> p = permissions.get(scope).get(groupKey);
+            PermissionBean bean = new PermissionBean();
+            bean.setUuid(null);
+            bean.setParentPath(StringUtils.substringBeforeLast(entry.getKey(), "/"));
+            bean.setName(StringUtils.substringAfterLast(entry.getKey(), "/"));
+            populateTitleAndDescription(bean);
+            bean.setPath(entry.getKey());
+            bean.setDepth(splitPath.length - 1);
+            bean.setMappedPermissions(new TreeMap<String, PermissionBean>());
+            if (p.containsKey(bean.getParentPath())) {
+                p.get(bean.getParentPath()).setHasChildren(true);
+            }
 
-                p.put(entry.getKey(), bean);
+            p.put(entry.getKey(), bean);
 
-                for (String s : entry.getValue()) {
-                    createMappedPermission(s, bean, mappedPermissions);
-                }
+            for (String s : entry.getValue()) {
+                createMappedPermission(s, bean, mappedPermissions);
             }
         }
 
@@ -576,8 +579,9 @@ public class RolesAndPermissionsHandler implements Serializable {
                 createMappedPermission(permissionPath, bean, mappedPermissions);
             }
 
-            if (allGroups.containsKey(permissionGroup.getName()) && !mappedPermissions.containsKey(permissionPath)) {
-                Map<String, PermissionBean> p = permissions.get(scope).get(allGroups.get(permissionGroup.getName()));
+            if (!mappedPermissions.containsKey(permissionPath)) {
+                String groupKey = getGroupKey(allGroups, permissionGroup.getName());
+                Map<String, PermissionBean> p = permissions.get(scope).get(groupKey);
                 if (!p.containsKey(permissionPath) || permissionNode.getPath().startsWith("/permissions")) {
                     PermissionBean bean = new PermissionBean();
                     setPermissionBeanProperties(permissionNode, bean);
@@ -590,8 +594,8 @@ public class RolesAndPermissionsHandler implements Serializable {
             }
             if (mappedPermissions.containsKey(permissionPath)) {
                 PermissionBean bean = mappedPermissions.get(permissionPath);
-
-                Map<String, PermissionBean> p = permissions.get(scope).get(allGroups.get(bean.getPath().split("/")[2]));
+                String groupKey = getGroupKey(allGroups, bean.getPath().split("/")[2]);
+                Map<String, PermissionBean> p = permissions.get(scope).get(groupKey);
                 setPermissionFlags(permissionNode, p, bean, permIdsMap.get(scope), inheritedPermIdsMap.get(scope), p.get(bean.getParentPath()));
             }
         }
@@ -624,6 +628,14 @@ public class RolesAndPermissionsHandler implements Serializable {
                 }
             }
         }
+    }
+
+    private String getGroupKey(Map<String, String> allGroups, String permissionGroup) {
+        String groupKey = allGroups.get(permissionGroup);
+        if (groupKey == null) {
+            groupKey = OTHER_PERMISSIONS_GROUP_MAME;
+        }
+        return groupKey;
     }
 
     private void createMappedPermission(String permissionPath, PermissionBean parent, Map<String, PermissionBean> mappedPermissions) throws RepositoryException {
