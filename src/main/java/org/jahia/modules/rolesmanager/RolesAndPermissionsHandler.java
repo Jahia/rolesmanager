@@ -51,6 +51,7 @@ import org.jahia.services.content.*;
 import org.jahia.services.content.nodetypes.ExtendedNodeType;
 import org.jahia.services.content.nodetypes.NodeTypeRegistry;
 import org.jahia.services.templates.JahiaTemplateManagerService;
+import org.jahia.utils.Patterns;
 import org.jahia.utils.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -631,11 +632,7 @@ public class RolesAndPermissionsHandler implements Serializable {
     }
 
     private String getGroupKey(Map<String, String> allGroups, String permissionGroup) {
-        String groupKey = allGroups.get(permissionGroup);
-        if (groupKey == null) {
-            groupKey = OTHER_PERMISSIONS_GROUP_MAME;
-        }
-        return groupKey;
+        return StringUtils.defaultString(allGroups.get(permissionGroup), OTHER_PERMISSIONS_GROUP_MAME);
     }
 
     private void createMappedPermission(String permissionPath, PermissionBean parent, Map<String, PermissionBean> mappedPermissions) throws RepositoryException {
@@ -726,7 +723,7 @@ public class RolesAndPermissionsHandler implements Serializable {
             localName = StringUtils.substringAfter(localName, ":");
         }
         String title = StringUtils.capitalize(PATTERN_UNDERSCORE_DASH.matcher(PATTERN_UPPERCASE_LETTER.matcher(localName).replaceAll(" $0")).replaceAll(" ").toLowerCase());
-        final String rbName = localName.replaceAll("-", "_");
+        final String rbName = Patterns.DASH.matcher(localName).replaceAll("_");
         Locale locale = LocaleContextHolder.getLocale();
         String rbKey = "label.permission." + rbName;
         String internalTitle = Messages.getInternal(rbKey, locale, title);
