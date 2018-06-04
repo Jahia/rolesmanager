@@ -92,14 +92,14 @@
             function setParent(parentPath) {
                 selector = ".checkbox[path='" + parentPath + "']";
 
-                if ($(".checkbox[parent='" + parentPath + "'][class*='checked']").size() ==
-                    $(".checkbox[parent='" + parentPath + "']").size()) {
+                if ($(".checkbox[parent='" + parentPath + "'][class*='checked']").length ==
+                    $(".checkbox[parent='" + parentPath + "']").length) {
                     $(selector).addClass('checked');
                     $(selector).removeClass('partial');
                     $(":checkbox[name='selectedPermissions'][path='" + parentPath + "']").attr('checked', true);
                     $(":checkbox[name='partialSelectedPermissions'][path='" + parentPath + "']").attr('checked', false);
-                } else if ($(".checkbox[parent='" + parentPath + "'][class*='checked']").size() > 0 ||
-                    $(".checkbox[parent='" + parentPath + "'][class*='partial']").size() > 0) {
+                } else if ($(".checkbox[parent='" + parentPath + "'][class*='checked']").length > 0 ||
+                    $(".checkbox[parent='" + parentPath + "'][class*='partial']").length > 0) {
                     $(selector).removeClass('checked');
                     $(selector).addClass('partial');
                     $(":checkbox[name='selectedPermissions'][path='" + parentPath + "']").attr('checked', false);
