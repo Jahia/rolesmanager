@@ -51,7 +51,7 @@
                 <fieldset>
                     <div class="container">
                         <div class="row">
-                            <div class="col-sm-4 col-sm-offset-1 col-md-4 col-md-offset-1">
+                            <div class="col-sm-4 col-md-4 ">
                                 <div class="form-group label-floating ">
                                     <label class="control-label" for="newRole"><fmt:message key="label.name"/>
                                         <span class="text-error"><strong>*</strong></span></label>
@@ -65,9 +65,14 @@
                             <div class="row">
                                 <div class="col-sm-4 col-md-4">
                                     <label for="deepCopy" class="checkbox">
-                                        <input type="checkbox" name="deepCopy" id="deepCopy" checked="checked"> ${fn:escapeXml(i18nDeepCopy)}
-                                        <a id="copySubRolesHelp" title="${fn:escapeXml(i18nHelp)}" href="#copySubRolesHelp">
-                                            <i class="material-icons" alt="${fn:escapeXml(i18nHelp)}">help</i></a>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input id="deepCopy" name="deepCopy" type="checkbox" checked="checked">
+                                                ${fn:escapeXml(i18nDeepCopy)}
+                                                <a id="copySubRolesHelp" title="${fn:escapeXml(i18nHelp)}" href="#copySubRolesHelp">
+                                                <i class="material-icons" alt="${fn:escapeXml(i18nHelp)}">help</i></a>
+                                            </label>
+                                        </div>
                                     </label>
                                 </div>
                             </div>
