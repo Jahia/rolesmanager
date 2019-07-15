@@ -2,20 +2,16 @@
     vertical-align: bottom;
 }
 
-.panel-pdg {
-    padding: 15px;
-}
-
 .form-adjust {
     margin-top: 0px!important;
 }
 
-.checkbox input[type=checkbox]:checked + .checkbox-material .check, label.checkbox-inline input[type=checkbox]:checked + .checkbox-material .check, .checkbox-material > span:before, .btn:not(.btn-raised).btn-primary, .input-group-btn .btn:not(.btn-raised).btn-primary,a, a:hover, a:focus {
+/*.checkbox input[type=checkbox]:checked + .checkbox-material .check, label.checkbox-inline input[type=checkbox]:checked + .checkbox-material .check, .checkbox-material > span:before, .btn:not(.btn-raised).btn-primary, .input-group-btn .btn:not(.btn-raised).btn-primary,a, a:hover, a:focus {*/
 
-    color: #017caf!important;
-    border-color: #017caf!important;
+/*    color: #017caf!important;*/
+/*    border-color: #017caf!important;*/
 
-}
+/*}*/
 
 .btn:not(.btn-raised).btn-danger, .input-group-btn .btn:not(.btn-raised).btn-danger {
     color: #bd1330;

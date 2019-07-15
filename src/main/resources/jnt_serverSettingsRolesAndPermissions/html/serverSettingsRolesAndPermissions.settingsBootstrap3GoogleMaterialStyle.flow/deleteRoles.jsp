@@ -21,20 +21,20 @@
         });
     </script>
 </template:addResources>
+
 <div class="page-header">
     <h2><fmt:message key="rolesmanager.rolesAndPermissions.role.delete" /></h2>
 </div>
-<div class="panel panel-default panel-pdg">
-    <div>
-        <fmt:message key="rolesmanager.rolesAndPermissions.role.delete.confirm" />
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <p><fmt:message key="rolesmanager.rolesAndPermissions.role.delete.confirm" /></p>
     </div>
+    <div class="panel-body">
+        <c:forEach items="${roles}" var="entry" varStatus="loopStatus">
+            <h4><fmt:message key="rolesmanager.rolesAndPermissions.roleType.${fn:replace(entry.key,'-','_')}"/></h4>
 
-    <c:forEach items="${roles}" var="entry" varStatus="loopStatus">
-        <fieldset>
-
-               <h3><fmt:message key="rolesmanager.rolesAndPermissions.roleType.${fn:replace(entry.key,'-','_')}"/></h3>
-
-            <table class="table table-hover table-striped">
+            <table class="table table-striped">
                 <thead>
                 <tr>
                     <th width="25%">
@@ -62,18 +62,17 @@
                 </c:forEach>
                 </tbody>
             </table>
+        </c:forEach>
 
-        </fieldset>
-    </c:forEach>
-
-    <form style="margin: 0;" action="${flowExecutionUrl}" method="POST">
-        <button class="btn btn-danger" type="submit" name="_eventId_deleteRolesConfirmed" id="${currentNode.identifier}-deleteRolesConfirmed">
-            <i class="icon-remove icon-white"></i>
-            <fmt:message key="rolesmanager.rolesAndPermissions.role.delete" />
-        </button>
-        <button class="btn" type="submit" name="_eventId_cancel">
-            <i class="icon-ban-circle"></i>
-            <fmt:message key="label.cancel" />
-        </button>
-    </form>
+        <form style="margin: 0;" action="${flowExecutionUrl}" method="POST">
+            <button class="btn btn-danger btn-raised pull-right" type="submit" name="_eventId_deleteRolesConfirmed" id="${currentNode.identifier}-deleteRolesConfirmed">
+                <i class="icon-remove icon-white"></i>
+                <fmt:message key="rolesmanager.rolesAndPermissions.role.delete" />
+            </button>
+            <button class="btn btn-default pull-right" type="submit" name="_eventId_cancel">
+                <i class="icon-ban-circle"></i>
+                <fmt:message key="label.cancel" />
+            </button>
+        </form>
+    </div>
 </div>

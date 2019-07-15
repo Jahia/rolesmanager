@@ -34,62 +34,65 @@
 <div class="page-header">
     <h2><fmt:message key="rolesmanager.rolesAndPermissions.copyRole"/>: ${handler.roleBean.name}</h2>
 </div>
-<div class="col-sm-6 col-sm-offset-3">
-    <div class="panel panel-default panel-pdg">
-        <p>
-            <c:forEach var="msg" items="${flowRequestContext.messageContext.allMessages}">
-                <div class="alert ${msg.severity == 'ERROR' ? 'validationError' : ''} ${msg.severity == 'ERROR' ? ' alert-danger' : ' alert-success'}">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        ${fn:escapeXml(msg.text)}
-                </div>
-            </c:forEach>
-        </p>
 
-        <div>
+<c:forEach var="msg" items="${flowRequestContext.messageContext.allMessages}">
+    <div class="alert ${msg.severity == 'ERROR' ? 'validationError' : ''} ${msg.severity == 'ERROR' ? ' alert-danger' : ' alert-success'}">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+            ${fn:escapeXml(msg.text)}
+    </div>
+</c:forEach>
+
+<div class="col-sm-6 col-sm-offset-3">
+    <div class="panel panel-default">
+        <div class="panel-body">
             <form action="${flowExecutionUrl}" method="post" autocomplete="off">
                 <input type="hidden" name="uuid" value="${handler.roleBean.uuid}"/>
-                <fieldset>
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-sm-4 col-md-4 ">
-                                <div class="form-group label-floating ">
-                                    <label class="control-label" for="newRole"><fmt:message key="label.name"/>
-                                        <span class="text-error"><strong>*</strong></span></label>
-                                    <input type="text" name="newRole" class="form-control" id="newRole"
-                                           value="${fn:escapeXml(handler.roleBean.name)}-copy"/>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group label-floating ">
+                            <label class="control-label" for="newRole"><fmt:message key="label.name"/>
+                                <span class="text-error"><strong>*</strong></span></label>
+                            <input type="text" name="newRole" class="form-control" id="newRole"
+                                   value="${fn:escapeXml(handler.roleBean.name)}-copy"/>
+                        </div>
+                    </div>
+                </div>
+
+
+                <c:if test="${fn:length(handler.roleBean.subRoles) > 0}">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="checkbox">
+                                        <label for="deepCopy" class="checkbox">
+                                            <input id="deepCopy" name="deepCopy" type="checkbox" checked="checked">
+                                            ${fn:escapeXml(i18nDeepCopy)}
+                                        </label>
+                                    </div>
+                                    <span class="input-group-btn">
+                                        <a id="copySubRolesHelp" class="btn btn-primary btn-fab btn-fab-xs"
+                                           data-toggle="tooltip" data-container="body"
+                                           title="${fn:escapeXml(i18nHelp)}" href="#copySubRolesHelp">
+                                            <i class="material-icons" alt="${fn:escapeXml(i18nHelp)}">info</i>
+                                        </a>
+                                    </span>
                                 </div>
                             </div>
                         </div>
-
-                        <c:if test="${fn:length(handler.roleBean.subRoles) > 0}">
-                            <div class="row">
-                                <div class="col-sm-4 col-md-4">
-                                    <label for="deepCopy" class="checkbox">
-                                        <div class="checkbox">
-                                            <label>
-                                                <input id="deepCopy" name="deepCopy" type="checkbox" checked="checked">
-                                                ${fn:escapeXml(i18nDeepCopy)}
-                                                <a id="copySubRolesHelp" title="${fn:escapeXml(i18nHelp)}" href="#copySubRolesHelp">
-                                                <i class="material-icons" alt="${fn:escapeXml(i18nHelp)}">help</i></a>
-                                            </label>
-                                        </div>
-                                    </label>
-                                </div>
-                            </div>
-                        </c:if>
                     </div>
-                </fieldset>
+                </c:if>
 
-                <fieldset>
-                  <div class="row">
-                    <button class="btn btn-primary pull-right" type="submit" name="_eventId_copy" onclick="workInProgress('${i18nWaiting}'); return true;">
-                      &nbsp;<fmt:message key="label.copy"/>
+                <div class="form-group from-group-sm">
+                    <button class="btn btn-primary btn-raised pull-right" type="submit" name="_eventId_copy"
+                            onclick="workInProgress('${i18nWaiting}'); return true;">
+                        <fmt:message key="label.copy"/>
                     </button>
-                    <button class="btn btn-primary pull-right" type="submit" name="_eventId_cancel">
-                      &nbsp;<fmt:message key="label.cancel"/>
+                    <button class="btn btn-default pull-right" type="submit" name="_eventId_cancel">
+                        <fmt:message key="label.cancel"/>
                     </button>
-                  </div>
-                </fieldset>
+                </div>
             </form>
         </div>
     </div>
