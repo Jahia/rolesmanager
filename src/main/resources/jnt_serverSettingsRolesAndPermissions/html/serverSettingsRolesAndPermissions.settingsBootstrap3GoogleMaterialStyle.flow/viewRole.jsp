@@ -232,6 +232,7 @@
                             </ul>
                             <div class="tab-content">
                                 <div id="tabPermissions" class="tab-pane active">
+                                    <br />
                                     <div>
                                         <c:forEach items="${handler.roleBean.permissions}" var="centry" varStatus="status">
                                             <p>
@@ -388,6 +389,7 @@
                                 </div>
 
                                 <div id="tabLabel" class="tab-pane">
+                                    <br />
                                     <fieldset>
                                         <p><fmt:message key="rolesmanager.rolesAndPermissions.labels.description"/></p>
 
@@ -449,6 +451,7 @@
                                 </div>
 
                                 <div id="tabTypes" class="tab-pane">
+                                    <br />
                                     <p><fmt:message key="rolesmanager.rolesAndPermissions.nodeTypes.description"/></p>
 
                                     <div>
@@ -495,6 +498,7 @@
                                 </div>
 
                                 <div id="tabSub" class="tab-pane">
+                                    <br />
                                     <p><fmt:message key="rolesmanager.rolesAndPermissions.subRoles.description"/></p>
 
                                     <div class="row">
