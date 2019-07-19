@@ -164,382 +164,408 @@
     <h2><fmt:message key="rolesmanager.rolesAndPermissions.roleDetails"/> : ${handler.roleBean.name}</h2>
 </div>
 
-<div class="panel panel-default panel-pdg">
-    <form id="roleForm" style="display: none" action="${flowExecutionUrl}" method="POST" onsubmit="workInProgress('${i18nWaiting}');">
-        <input type="hidden" name="_eventId" class="eventId"/>
-        <input type="hidden" name="uuid" class="roleUuid"/>
-    </form>
+<c:forEach var="msg" items="${flowRequestContext.messageContext.allMessages}">
+    <div class="alert ${msg.severity == 'ERROR' ? 'validationError' : ''} ${msg.severity == 'ERROR' ? ' alert-danger' : ' alert-success'}">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+            ${fn:escapeXml(msg.text)}
+    </div>
+</c:forEach>
 
+<div class="panel panel-default">
+    <div class="panel-body">
+        <form id="roleForm" style="display: none" action="${flowExecutionUrl}" method="POST" onsubmit="workInProgress('${i18nWaiting}');">
+            <input type="hidden" name="_eventId" class="eventId"/>
+            <input type="hidden" name="uuid" class="roleUuid"/>
+        </form>
 
-    <c:forEach var="msg" items="${flowRequestContext.messageContext.allMessages}">
-        <div class="alert ${msg.severity == 'ERROR' ? 'validationError' : ''} ${msg.severity == 'ERROR' ? ' alert-danger' : ' alert-success'}">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                ${fn:escapeXml(msg.text)}
-        </div>
-    </c:forEach>
+        <div>
 
-    <div>
+            <form id="form" action="${flowExecutionUrl}" method="post">
+                <div class="row">
+                    <div class="col-md-6">
+                        <button class="btn btn-default btn-raised" type="submit" name="_eventId_rolesList">
+                            <fmt:message key="rolesmanager.rolesAndPermissions.backToRolesList"/>
+                        </button>
 
-        <form id="form" action="${flowExecutionUrl}" method="post">
-            <fieldset>
-                <button class="btn" name="_eventId_rolesList">
-                    <i class=" icon-list"></i>&nbsp;<fmt:message key="rolesmanager.rolesAndPermissions.backToRolesList"/></button>
-                <c:if test="${not empty handler.roleBean.parentUuid}">
-                    <button class="btn" onclick="viewRole('${handler.roleBean.parentUuid}'); return false;">
-                        <i class=" icon-chevron-left"></i>&nbsp;<fmt:message key="rolesmanager.rolesAndPermissions.goToParentRole"/>
-                    </button>
-                </c:if>
-                <button class="submitButton btn ${handler.roleBean.dirty ? 'btn-danger' : 'btn-primary'}" type="submit"
-                        name="_eventId_saveRole">
-                    <i class="icon-ok icon-white"></i>&nbsp;<fmt:message key="label.save"/>
-                </button>
-                <button class="submitButton btn ${handler.roleBean.dirty ? 'btn-danger' : 'btn-primary'}" type="submit"
-                        name="_eventId_revertRole">
-                    <i class="icon-ok icon-white"></i>&nbsp;<fmt:message key="label.cancel"/>
-                </button>
-            </fieldset>
-
-            <div class="tabbable">
-                <ul class="nav nav-tabs">
-                    <li>
-                        <a href="#tabLabel" data-toggle="tab">
-                            <fmt:message key="rolesmanager.rolesAndPermissions.labels"/>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#tabTypes" data-toggle="tab">
-                            <fmt:message key="rolesmanager.rolesAndPermissions.nodeTypes"/>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#tabSub" data-toggle="tab">
-                            <fmt:message key="rolesmanager.rolesAndPermissions.subRoles"/>
-                        </a>
-                    </li>
-                </ul>
-                <div class="tab-content">
-                    <div id="tabLabel" class="tab-pane">
-                        <fieldset>
-                            <em>(<fmt:message key="rolesmanager.rolesAndPermissions.labels.description"/>)</em><br/>
-
-                            <div class="row">
-                                <div class="col-sm-6 col-md-6">
-                                    <div class="form-inline">
-                                        <div class="form-group">
-                                            <select id="newLanguage" class="form-control">
-                                                <c:forEach items="${handler.availableLanguages}" var="entry">
-                                                    <option value="${entry.key}">${entry.value}</option>
-                                                </c:forEach>
-                                            </select>
-                                            <button class="btn btn-primary"
-                                                    onclick="addI18nRow(); return false;"><i class="material-icons">add</i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <table class="table table-hover table-striped" id="roleI18nPropsTable">
-                                <thead>
-                                <tr>
-                                    <th width="10%"><fmt:message key="label.language"/></th>
-                                    <th width="20%"><fmt:message key="label.title"/></th>
-                                    <th width="70%"><fmt:message key="label.description"/></th>
-                                </tr>
-                                </thead>
-
-                                <tbody>
-                                <c:forEach items="${handler.roleBean.i18nProperties}" var="entry" varStatus="loopStatus">
-                                    <c:if test="${not empty entry.value}">
-                                        <tr>
-                                            <td>
-                                                    ${entry.value.language}
-                                                <input type="hidden" name="languageCode" value="${entry.key}"/>
-                                                <input type="hidden" name="languageName" value="${entry.value.language}"/>
-                                            </td>
-                                            <td>
-                                                <div class="form-group form-adjust">
-                                                    <input type="text" class="form-control" name="title" value="${entry.value.title}"
-                                                           onchange="$('.submitButton').addClass('btn-danger')"/>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="form-group form-adjust">
-                                            <textarea class="form-control" name="description"
-                                                      onchange="$('.submitButton').addClass('btn-danger')">${entry.value.description}</textarea>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </c:if>
-                                </c:forEach>
-                                </tbody>
-                            </table>
-                        </fieldset>
+                        <c:if test="${not empty handler.roleBean.parentUuid}">
+                            <button class="btn btn-default btn-raised" onclick="viewRole('${handler.roleBean.parentUuid}'); return false;">
+                                <fmt:message key="rolesmanager.rolesAndPermissions.goToParentRole"/>
+                            </button>
+                        </c:if>
                     </div>
-                    <div id="tabTypes" class="tab-pane">
-                        <em>(<fmt:message key="rolesmanager.rolesAndPermissions.nodeTypes.description"/>)</em><br/>
+                    <div class="col-md-6">
+                        <button class="submitButton btn ${handler.roleBean.dirty ? 'btn-danger' : 'btn-primary'} btn-raised pull-right" type="submit"
+                                name="_eventId_saveRole">
+                            <fmt:message key="label.save"/>
+                        </button>
+                        <button class="submitButton btn ${handler.roleBean.dirty ? 'btn-danger' : 'btn-default'} pull-right" type="submit"
+                                name="_eventId_revertRole">
+                            <fmt:message key="label.cancel"/>
+                        </button>
+                    </div>
+                </div>
 
-                        <div>
-                            <div class="container">
-                                <div class="row">
-                                    <div class="col-sm-1 col-md-1">
-                                        <label for="hidden"><fmt:message key="rolesmanager.rolesAndPermissions.hidden"/>
-                                            <input name="hidden" id="hidden" type="checkbox" ${handler.roleBean.hidden?'checked="true"':''}
-                                                   onchange="$('.submitButton').addClass('btn-danger')"/>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <c:if test="${not empty handler.roleBean.roleType.availableNodeTypes}">
-                                        <div class="col-sm-6 col-md-6">
-                                            <label for="nodeTypes">
-                                                <fmt:message key="rolesmanager.rolesAndPermissions.nodeTypes.onlyFor"/></label>
-                                            <div class="form-group form-adjust">
-                                                <select multiple="multiple" size="20" id="nodeTypes" name="nodeTypes" class="form-control"
-                                                        onchange="$('.submitButton').addClass('btn-danger'); updatedSelectedTypes();">
-                                                    <c:forEach items="${handler.roleBean.nodeTypes}" var="nodeType">
-                                                        <option value="${nodeType.name}" ${nodeType.set ? 'selected="true"' : ''}>${nodeType.displayName}</option>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="tabbable">
+                            <ul class="nav nav-tabs">
+                                <li class="active">
+                                    <a href="#tabPermissions" data-toggle="tab">
+                                        <fmt:message key="rolesmanager.rolesAndPermissions.permissions"/>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#tabLabel" data-toggle="tab">
+                                        <fmt:message key="rolesmanager.rolesAndPermissions.labels"/>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#tabTypes" data-toggle="tab">
+                                        <fmt:message key="rolesmanager.rolesAndPermissions.nodeTypes"/>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#tabSub" data-toggle="tab">
+                                        <fmt:message key="rolesmanager.rolesAndPermissions.subRoles"/>
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div id="tabPermissions" class="tab-pane active">
+                                    <br />
+                                    <div>
+                                        <c:forEach items="${handler.roleBean.permissions}" var="centry" varStatus="status">
+                                            <p>
+                                                <c:set var="key">${centry.key}.${handler.roleBean.roleType.name}</c:set>
+                                                <c:set var="key" value="${fn:replace(key,'-','_')}"/>
+                                                <c:set var="key" value="${fn:replace(key,'/','_')}"/>
+                                                <fmt:message key="rolesmanager.rolesAndPermissions.context.${key}" var="label"/>
+                                                <c:if test="${not fn:startsWith(label, '???')}">
+                                                    ${label}:
+                                                </c:if>
+                                                <c:if test="${fn:startsWith(label, '???')}">
+                                                    <fmt:message key="rolesmanager.rolesAndPermissions.context"/>&nbsp;${permissionGroup.key}:
+                                                </c:if>
+
+                                                <c:forEach items="${centry.value}" var="gentry" varStatus="status">
+                                                    <c:forEach items="${gentry.value}" var="entry">
+                                                        <c:set value="${entry.value}" var="permission"/>
+                                                        <c:if test="${(permission.set or permission.superSet) and not (centry.value[gentry.key][permission.parentPath].set or centry.value[gentry.key][permission.parentPath].superSet)}">
+                                                            <c:choose>
+                                                                <c:when test="${centry.key ne handler.currentContext}">
+                                                                    <a href="#"
+                                                                       onclick="$('#form').attr('action',$('#form').attr('action') + '#${permission.path}');$('#contextSelector').val('${centry.key}');$('#tabField').val('${gentry.key}');$('#eventField').attr('name','_eventId_switchGroup');$('#form').submit()"> ${permission.title} </a>
+                                                                    |
+                                                                </c:when>
+                                                                <c:when test="${gentry.key ne handler.currentGroup}">
+                                                                    <a href="#"
+                                                                       onclick="$('#form').attr('action',$('#form').attr('action') + '#${permission.path}');$('#switchToGroup${status.index}').click()"> ${permission.title} </a>
+                                                                    |
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <a href="#${permission.path}"> ${permission.title} </a>
+                                                                    |
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </c:if>
                                                     </c:forEach>
-                                                </select>
+                                                </c:forEach>
+                                            </p>
+                                        </c:forEach>
+                                    </div>
+
+                                    <div id="permissionsTree">
+                                        <input type="hidden" id="eventField" name="eventField" value="on"/>
+                                        <input type="hidden" id="permissionField" name="permission"/>
+                                        <select id="contextSelector" name="context" class="form-control"
+                                                onchange="$('#eventField').attr('name','_eventId_switchContext');$('#form').submit()">
+                                            <c:forEach items="${handler.roleBean.permissions}" var="permissionGroup">
+                                                <option ${flowRequestContext.currentState.id eq 'viewRole' and handler.currentContext eq permissionGroup.key ? 'selected':''}
+                                                        value="${permissionGroup.key}">
+                                                    <c:set var="key">${permissionGroup.key}.${handler.roleBean.roleType.name}</c:set>
+                                                    <c:set var="key" value="${fn:replace(key,'-','_')}"/>
+                                                    <c:set var="key" value="${fn:replace(key,'/','_')}"/>
+                                                    <fmt:message key="rolesmanager.rolesAndPermissions.context.${key}" var="label"/>
+                                                    <c:if test="${not fn:startsWith(label, '???')}">
+                                                        ${label}
+                                                    </c:if>
+                                                    <c:if test="${fn:startsWith(label, '???')}">
+                                                        <fmt:message key="rolesmanager.rolesAndPermissions.context"/> &nbsp; ${permissionGroup.key}
+                                                    </c:if>
+                                                </option>
+                                            </c:forEach>
+                                        </select>
+
+                                        <input type="hidden" name="groupTab" id="tabField" value=""/>
+
+                                        <div class="btn-group">
+                                            <div class="btn-group">
+                                                <c:forEach items="${handler.roleBean.permissions[handler.currentContext]}" var="permissionGroup" varStatus="status">
+                                                    <button class="btn ${handler.currentGroup eq permissionGroup.key ? 'btn-primary btn-raised':''}"
+                                                            id="switchToGroup${status.index}" type="submit" name="_eventId_switchGroup"
+                                                            onclick="$('#tabField').val('${permissionGroup.key}')">
+                                                        <c:set var="key" value="${fn:replace(permissionGroup.key,',','_')}"/>
+                                                        <c:set var="key" value="${fn:replace(key,'-','_')}"/>
+                                                        <fmt:message key="rolesmanager.rolesAndPermissions.group.${key}"/>
+                                                    </button>
+                                                </c:forEach>
                                             </div>
                                         </div>
-                                        <div class="col-sm-6 col-md-6">
-                                            <p><fmt:message key="label.selected"/></p>
-                                            <ul id="selectedAvailableNodeTypes">
-                                                <c:forEach items="${handler.roleBean.nodeTypes}" var="nodeType">
-                                                    <c:if test="${nodeType.set}">
-                                                        <li>${nodeType.displayName}</li>
-                                                    </c:if>
-                                                </c:forEach>
-                                            </ul>
-                                        </div>
-                                    </c:if>
-                                </div>
-                            </div>
-                        </div>
 
-                        <input id="selectedPermissions" type="hidden" name="selectedPermissions"/>
-                        <input id="partialSelectedPermissions" type="hidden" name="partialSelectedPermissions"/>
-                    </div>
-                    <div id="tabSub" class="tab-pane">
-                        <em>(<fmt:message key="rolesmanager.rolesAndPermissions.subRoles.description"/>)</em><br/>
 
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <fieldset>
-                                    <input type="hidden" name="roleType" value="${handler.roleBean.roleType.name}"/>
-                                    <div class="form-group label-floating">
-                                        <label class="control-label" for="function"><fmt:message
-                                                key="rolesmanager.rolesAndPermissions.subRole.name"/></label>
-                                        <input type="text" name="newRole" class="form-control"/>
+                                        <fieldset>
+                                            <c:if test="${not empty handler.roleBean.permissions[handler.currentContext][handler.currentGroup]}">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                    <tr>
+                                                        <th width="3%">&nbsp;</th>
+                                                        <th width="40%">
+                                                            <fmt:message key="label.name"/>
+                                                        </th>
+                                                        <th width="57%">
+                                                            <fmt:message key="label.description"/>
+                                                        </th>
+                                                    </tr>
+                                                    </thead>
+
+                                                    <tbody>
+
+                                                    <c:forEach items="${handler.roleBean.permissions[handler.currentContext][handler.currentGroup]}" var="entry">
+                                                        <c:set value="${entry.value}" var="permission"/>
+                                                        <tr>
+                                                            <td>
+                                                                <a name="${permission.path}"></a>
+
+                                                                <div class="triState" style="height:13px; overflow: hidden">
+
+                                                                    <c:choose>
+                                                                        <c:when test="${permission.superSet}"><span class="checkbox super-checked"></span></c:when>
+                                                                        <c:when test="${permission.set}">
+                                                                            <div class="checkbox">
+                                                                                <label>
+                                                                                    <a class="checkbox checked" path="${permission.path}"
+                                                                                       parent="${permission.parentPath}" href=""></a>
+                                                                                    <span class="checkbox checkbox-material"></span>
+                                                                                </label>
+                                                                            </div>
+                                                                        </c:when>
+                                                                        <c:when test="${permission.partialSet}">
+                                                                            <a class="checkbox partial" path="${permission.path}" parent="${permission.parentPath}"
+                                                                               href=""></a>
+                                                                        </c:when>
+                                                                        <c:otherwise>
+                                                                            <a class="checkbox" path="${permission.path}" parent="${permission.parentPath}"
+                                                                               href=""></a>
+                                                                        </c:otherwise>
+                                                                    </c:choose>
+
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <c:forEach var="i" begin="3" end="${permission.depth}" step="1" varStatus="status5">
+                                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                                </c:forEach>
+                                                                    ${permission.depth == 2 ? '<h3>' : '' }${permission.title} ${permission.depth == 2 ? '</h3>' : '' }
+
+                                                                <c:if test="${not empty permission.mappedPermissions and not permission.partialSet and not permission.hasChildren}">
+                                                                    <a href="#"
+                                                                       onclick="$('#permissionField').val('${permission.path}');$('#eventField').attr('name','_eventId_expandMappedPermissions');$('#form').submit()">
+                                                                        <c:if test="${permission.mappedPermissionsExpanded}">-</c:if>
+                                                                        <c:if test="${not permission.mappedPermissionsExpanded}">+</c:if>
+                                                                    </a>
+                                                                </c:if>
+
+                                                            </td>
+                                                            <td>
+                                                                    ${permission.description}
+                                                            </td>
+                                                        </tr>
+                                                    </c:forEach>
+                                                    </tbody>
+                                                </table>
+                                            </c:if>
+                                        </fieldset>
                                     </div>
-                                    <input type="hidden" id="uuid" name="uuid" value="${handler.roleBean.uuid}"/>
-                                    <button class="btn btn-primary" type="submit" name="_eventId_addRole">
-                                        <i class="icon-plus  icon-white"></i>
-                                        <fmt:message key="rolesmanager.rolesAndPermissions.subRole.add"/>
-                                    </button>
-                                </fieldset>
-                            </div>
-                            <div class="col-sm-6">&nbsp;</div>
-                        </div>
+                                </div>
 
-                        <div class="row">
-                            <div class="col-sm-10 col-md-10 col-sm-offset-1 col-md-offset-1">
-                                <h3><fmt:message key="rolesmanager.rolesAndPermissions.subRoles"/></h3>
-                                <c:choose>
-                                    <c:when test="${not empty handler.roleBean.subRoles}">
-                                        <table class="table table-hover table-striped">
+                                <div id="tabLabel" class="tab-pane">
+                                    <br />
+                                    <fieldset>
+                                        <p><fmt:message key="rolesmanager.rolesAndPermissions.labels.description"/></p>
+
+                                        <div class="row">
+                                            <div class="col-sm-6 col-md-6">
+                                                <div class="form-inline">
+                                                    <div class="form-group">
+                                                        <select id="newLanguage" class="form-control"
+                                                                style="min-width: 150px">
+                                                            <c:forEach items="${handler.availableLanguages}" var="entry">
+                                                                <option value="${entry.key}">${entry.value}</option>
+                                                            </c:forEach>
+                                                        </select>
+                                                        <button class="btn btn-primary btn-fab btn-fab-mini"
+                                                                onclick="addI18nRow(); return false;">
+                                                            <i class="material-icons">add</i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <table class="table table-striped" id="roleI18nPropsTable">
                                             <thead>
                                             <tr>
-                                                <th width="25%">
-                                                    <fmt:message key="label.name"/>
-                                                </th>
-                                                <th width="75%">
-                                                    <fmt:message key="label.description"/>
-                                                </th>
+                                                <th width="10%"><fmt:message key="label.language"/></th>
+                                                <th width="20%"><fmt:message key="label.title"/></th>
+                                                <th width="70%"><fmt:message key="label.description"/></th>
                                             </tr>
                                             </thead>
 
                                             <tbody>
-                                            <c:forEach items="${handler.roleBean.subRoles}" var="subRole">
-                                                <tr>
-                                                    <td>
-                                                        <strong><a href="#" name="_eventId_viewRole"
-                                                                   onclick="viewRole('${subRole.uuid}')">${subRole.title}
-                                                            (${subRole.name})</a></strong>
-                                                    </td>
-                                                    <td>${subRole.description}</td>
-                                                </tr>
+                                            <c:forEach items="${handler.roleBean.i18nProperties}" var="entry" varStatus="loopStatus">
+                                                <c:if test="${not empty entry.value}">
+                                                    <tr>
+                                                        <td>
+                                                                ${entry.value.language}
+                                                            <input type="hidden" name="languageCode" value="${entry.key}"/>
+                                                            <input type="hidden" name="languageName" value="${entry.value.language}"/>
+                                                        </td>
+                                                        <td>
+                                                            <div class="form-group form-adjust">
+                                                                <input type="text" class="form-control" name="title" value="${entry.value.title}"
+                                                                       onchange="$('.submitButton').addClass('btn-danger')"/>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="form-group form-adjust">
+                                                        <textarea class="form-control" name="description"
+                                                                  onchange="$('.submitButton').addClass('btn-danger')">${entry.value.description}</textarea>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </c:if>
                                             </c:forEach>
                                             </tbody>
                                         </table>
-                                    </c:when>
-                                    <c:otherwise><fmt:message key="rolesmanager.rolesAndPermissions.subRoles.empty"/></c:otherwise>
-                                </c:choose>
+                                    </fieldset>
+                                </div>
+
+                                <div id="tabTypes" class="tab-pane">
+                                    <br />
+                                    <p><fmt:message key="rolesmanager.rolesAndPermissions.nodeTypes.description"/></p>
+
+                                    <div>
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-sm-1 col-md-1">
+                                                    <label for="hidden"><fmt:message key="rolesmanager.rolesAndPermissions.hidden"/>
+                                                        <input name="hidden" id="hidden" type="checkbox" ${handler.roleBean.hidden?'checked="true"':''}
+                                                               onchange="$('.submitButton').addClass('btn-danger')"/>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <c:if test="${not empty handler.roleBean.roleType.availableNodeTypes}">
+                                                    <div class="col-sm-6 col-md-6">
+                                                        <label for="nodeTypes">
+                                                            <fmt:message key="rolesmanager.rolesAndPermissions.nodeTypes.onlyFor"/></label>
+                                                        <div class="form-group form-adjust">
+                                                            <select multiple="multiple" size="20" id="nodeTypes" name="nodeTypes" class="form-control"
+                                                                    onchange="$('.submitButton').addClass('btn-danger'); updatedSelectedTypes();">
+                                                                <c:forEach items="${handler.roleBean.nodeTypes}" var="nodeType">
+                                                                    <option value="${nodeType.name}" ${nodeType.set ? 'selected="true"' : ''}>${nodeType.displayName}</option>
+                                                                </c:forEach>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6 col-md-6">
+                                                        <p><fmt:message key="label.selected"/></p>
+                                                        <ul id="selectedAvailableNodeTypes">
+                                                            <c:forEach items="${handler.roleBean.nodeTypes}" var="nodeType">
+                                                                <c:if test="${nodeType.set}">
+                                                                    <li>${nodeType.displayName}</li>
+                                                                </c:if>
+                                                            </c:forEach>
+                                                        </ul>
+                                                    </div>
+                                                </c:if>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <input id="selectedPermissions" type="hidden" name="selectedPermissions"/>
+                                    <input id="partialSelectedPermissions" type="hidden" name="partialSelectedPermissions"/>
+                                </div>
+
+                                <div id="tabSub" class="tab-pane">
+                                    <br />
+                                    <p><fmt:message key="rolesmanager.rolesAndPermissions.subRoles.description"/></p>
+
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="input-group">
+                                                <input type="hidden" name="roleType" value="${handler.roleBean.roleType.name}"/>
+                                                <div class="form-group label-floating">
+                                                    <label class="control-label" for="function"><fmt:message
+                                                            key="rolesmanager.rolesAndPermissions.subRole.name"/></label>
+                                                    <input type="text" name="newRole" class="form-control"/>
+                                                </div>
+                                                <input type="hidden" id="uuid" name="uuid" value="${handler.roleBean.uuid}"/>
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-primary btn-fab btn-fab-mini"
+                                                            data-toggle="tooltip" data-container="body"
+                                                            data-title="<fmt:message key='rolesmanager.rolesAndPermissions.subRole.add'/>"
+                                                            type="submit" name="_eventId_addRole">
+                                                        <i class="material-icons">add</i>
+                                                    </button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">&nbsp;</div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <h4><fmt:message key="rolesmanager.rolesAndPermissions.subRoles"/></h4>
+                                            <c:choose>
+                                                <c:when test="${not empty handler.roleBean.subRoles}">
+                                                    <table class="table table-striped">
+                                                        <thead>
+                                                        <tr>
+                                                            <th width="25%">
+                                                                <fmt:message key="label.name"/>
+                                                            </th>
+                                                            <th width="75%">
+                                                                <fmt:message key="label.description"/>
+                                                            </th>
+                                                        </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                        <c:forEach items="${handler.roleBean.subRoles}" var="subRole">
+                                                            <tr>
+                                                                <td>
+                                                                    <strong><a href="#" name="_eventId_viewRole"
+                                                                               onclick="viewRole('${subRole.uuid}')">${subRole.title}
+                                                                        (${subRole.name})</a></strong>
+                                                                </td>
+                                                                <td>${subRole.description}</td>
+                                                            </tr>
+                                                        </c:forEach>
+                                                        </tbody>
+                                                    </table>
+                                                </c:when>
+                                                <c:otherwise><fmt:message key="rolesmanager.rolesAndPermissions.subRoles.empty"/></c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                            <br>
                         </div>
                     </div>
                 </div>
-                <br>
-            </div>
-            <h4><fmt:message key="rolesmanager.rolesAndPermissions.permissions"/></h4>
-
-            <div>
-                <c:forEach items="${handler.roleBean.permissions}" var="centry" varStatus="status">
-                    <p>
-                        <c:set var="key">${centry.key}.${handler.roleBean.roleType.name}</c:set>
-                        <c:set var="key" value="${fn:replace(key,'-','_')}"/>
-                        <c:set var="key" value="${fn:replace(key,'/','_')}"/>
-                        <fmt:message key="rolesmanager.rolesAndPermissions.context.${key}" var="label"/>
-                        <c:if test="${not fn:startsWith(label, '???')}">
-                            ${label}:
-                        </c:if>
-                        <c:if test="${fn:startsWith(label, '???')}">
-                            <fmt:message key="rolesmanager.rolesAndPermissions.context"/>&nbsp;${permissionGroup.key}:
-                        </c:if>
-
-                        <c:forEach items="${centry.value}" var="gentry" varStatus="status">
-                            <c:forEach items="${gentry.value}" var="entry">
-                                <c:set value="${entry.value}" var="permission"/>
-                                <c:if test="${(permission.set or permission.superSet) and not (centry.value[gentry.key][permission.parentPath].set or centry.value[gentry.key][permission.parentPath].superSet)}">
-                                    <c:choose>
-                                        <c:when test="${centry.key ne handler.currentContext}">
-                                            <a href="#"
-                                               onclick="$('#form').attr('action',$('#form').attr('action') + '#${permission.path}');$('#contextSelector').val('${centry.key}');$('#tabField').val('${gentry.key}');$('#eventField').attr('name','_eventId_switchGroup');$('#form').submit()"> ${permission.title} </a>
-                                            |
-                                        </c:when>
-                                        <c:when test="${gentry.key ne handler.currentGroup}">
-                                            <a href="#"
-                                               onclick="$('#form').attr('action',$('#form').attr('action') + '#${permission.path}');$('#switchToGroup${status.index}').click()"> ${permission.title} </a>
-                                            |
-                                        </c:when>
-                                        <c:otherwise>
-                                            <a href="#${permission.path}"> ${permission.title} </a>
-                                            |
-                                        </c:otherwise>
-                                    </c:choose>
-                                </c:if>
-                            </c:forEach>
-                        </c:forEach>
-                    </p>
-                </c:forEach>
-            </div>
-
-            <div id="permissionsTree">
-                <input type="hidden" id="eventField" name="eventField" value="on"/>
-                <input type="hidden" id="permissionField" name="permission"/>
-                <select id="contextSelector" name="context" class="form-control"
-                        onchange="$('#eventField').attr('name','_eventId_switchContext');$('#form').submit()">
-                    <c:forEach items="${handler.roleBean.permissions}" var="permissionGroup">
-                        <option ${flowRequestContext.currentState.id eq 'viewRole' and handler.currentContext eq permissionGroup.key ? 'selected':''}
-                                value="${permissionGroup.key}">
-                            <c:set var="key">${permissionGroup.key}.${handler.roleBean.roleType.name}</c:set>
-                            <c:set var="key" value="${fn:replace(key,'-','_')}"/>
-                            <c:set var="key" value="${fn:replace(key,'/','_')}"/>
-                            <fmt:message key="rolesmanager.rolesAndPermissions.context.${key}" var="label"/>
-                            <c:if test="${not fn:startsWith(label, '???')}">
-                                ${label}
-                            </c:if>
-                            <c:if test="${fn:startsWith(label, '???')}">
-                                <fmt:message key="rolesmanager.rolesAndPermissions.context"/> &nbsp; ${permissionGroup.key}
-                            </c:if>
-                        </option>
-                    </c:forEach>
-                </select>
-
-
-                <p>
-                </p>
-
-                <input type="hidden" name="groupTab" id="tabField" value=""/>
-
-                <div class="btn-group">
-                    <div class="btn-group">
-                        <c:forEach items="${handler.roleBean.permissions[handler.currentContext]}" var="permissionGroup" varStatus="status">
-                            <button class="btn ${handler.currentGroup eq permissionGroup.key ? 'btn-success':''}"
-                                    id="switchToGroup${status.index}" type="submit" name="_eventId_switchGroup"
-                                    onclick="$('#tabField').val('${permissionGroup.key}')">
-                                <c:set var="key" value="${fn:replace(permissionGroup.key,',','_')}"/>
-                                <c:set var="key" value="${fn:replace(key,'-','_')}"/>
-                                <fmt:message key="rolesmanager.rolesAndPermissions.group.${key}"/>
-                            </button>
-                        </c:forEach>
-                    </div>
-                </div>
-
-
-                <fieldset>
-                    <c:if test="${not empty handler.roleBean.permissions[handler.currentContext][handler.currentGroup]}">
-                        <table class="table table-hover table-striped">
-                            <thead>
-                            <tr>
-                                <th width="3%">&nbsp;</th>
-                                <th width="40%">
-                                    <fmt:message key="label.name"/>
-                                </th>
-                                <th width="57%">
-                                    <fmt:message key="label.description"/>
-                                </th>
-                            </tr>
-                            </thead>
-
-                            <tbody>
-
-                            <c:forEach items="${handler.roleBean.permissions[handler.currentContext][handler.currentGroup]}" var="entry">
-                                <c:set value="${entry.value}" var="permission"/>
-                                <tr>
-                                    <td>
-                                        <a name="${permission.path}"></a>
-
-                                        <div class="triState" style="height:13px; overflow: hidden">
-
-                                            <c:choose>
-                                                <c:when test="${permission.superSet}"><span class="checkbox super-checked"></span></c:when>
-                                                <c:when test="${permission.set}">
-                                                    <div class="checkbox">
-                                                        <label>
-                                                            <a class="checkbox checked" path="${permission.path}"
-                                                               parent="${permission.parentPath}" href=""></a>
-                                                            <span class="checkbox checkbox-material"></span>
-                                                        </label>
-                                                    </div>
-                                                </c:when>
-                                                <c:when test="${permission.partialSet}">
-                                                    <a class="checkbox partial" path="${permission.path}" parent="${permission.parentPath}"
-                                                       href=""></a>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <a class="checkbox" path="${permission.path}" parent="${permission.parentPath}"
-                                                       href=""></a>
-                                                </c:otherwise>
-                                            </c:choose>
-
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <c:forEach var="i" begin="3" end="${permission.depth}" step="1" varStatus="status5">
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                        </c:forEach>
-                                            ${permission.depth == 2 ? '<h3>' : '' }${permission.title} ${permission.depth == 2 ? '</h3>' : '' }
-
-                                        <c:if test="${not empty permission.mappedPermissions and not permission.partialSet and not permission.hasChildren}">
-                                            <a href="#"
-                                               onclick="$('#permissionField').val('${permission.path}');$('#eventField').attr('name','_eventId_expandMappedPermissions');$('#form').submit()">
-                                                <c:if test="${permission.mappedPermissionsExpanded}">-</c:if>
-                                                <c:if test="${not permission.mappedPermissionsExpanded}">+</c:if>
-                                            </a>
-                                        </c:if>
-
-                                    </td>
-                                    <td>
-                                            ${permission.description}
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                            </tbody>
-                        </table>
-                    </c:if>
-                </fieldset>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
