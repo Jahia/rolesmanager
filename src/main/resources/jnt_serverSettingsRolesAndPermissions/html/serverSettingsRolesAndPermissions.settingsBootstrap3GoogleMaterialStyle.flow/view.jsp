@@ -36,12 +36,12 @@
             var deleteRolesButton = $('#deleteRolesButton');
 
             if (uuids.length == 1) {
-                $('#addRoleButtonLabel').text(addSubRoleLabel);
+                $('#addRoleButtonLabel').attr('data-original-title', addSubRoleLabel);
                 roleTypeCombo.val($("#" + uuids[0]).attr("roleType"));
                 roleTypeCombo.prop("disabled", true);
                 $('#uuid').val(uuids[0]);
             } else {
-                $('#addRoleButtonLabel').text(addRoleLabel);
+                $('#addRoleButtonLabel').attr('data-original-title', addRoleLabel);
                 roleTypeCombo.prop("disabled", false);
                 $('#uuid').val('');
             }
@@ -123,7 +123,7 @@
                                     <span class="input-group-btn">
                                         <button class="btn btn-primary btn-fab btn-fab-mini" type="submit"
                                                 data-toggle="tooltip" data-container="body" id="addRoleButtonLabel"
-                                                data-title="<fmt:message key='rolesmanager.rolesAndPermissions.role.add'/>" >
+                                                data-original-title="<fmt:message key='rolesmanager.rolesAndPermissions.role.add'/>" >
                                             <i class="material-icons">add</i>
                                         </button>
                                     </span>
