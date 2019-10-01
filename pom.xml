@@ -44,24 +44,28 @@
         please contact the sales department at sales@jahia.com.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.jahia.modules</groupId>
         <artifactId>jahia-modules</artifactId>
         <version>7.1.0.0</version>
     </parent>
+
     <artifactId>rolesmanager</artifactId>
-	<version>7.1.8-SNAPSHOT</version>
+    <version>7.2.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Jahia Roles Manager</name>
     <description>This is a custom module for running on a Jahia server.</description>
+
     <scm>
         <connection>scm:git:git@github.com:Jahia/rolesmanager.git</connection>
         <developerConnection>scm:git:git@github.com:Jahia/rolesmanager.git</developerConnection>
         <url>scm:git:git@github.com:Jahia/rolesmanager.git</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <properties>
         <jahia-depends>default,serverSettings</jahia-depends>
