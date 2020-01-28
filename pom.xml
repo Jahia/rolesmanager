@@ -51,7 +51,7 @@
     <parent>
         <groupId>org.jahia.modules</groupId>
         <artifactId>jahia-modules</artifactId>
-        <version>7.1.0.0</version>
+        <version>7.5.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>rolesmanager</artifactId>
@@ -71,6 +71,7 @@
         <jahia-depends>default,serverSettings</jahia-depends>
         <jahia-deploy-on-site>system</jahia-deploy-on-site>
         <jahia-module-type>system</jahia-module-type>
+        <jahia-module-signature>MCwCFFLT7vCpLt0UX+SU0VnIsEHLGVWpAhQnY82f1Ncxa+LoQYW3pliKkSZITQ==</jahia-module-signature>
     </properties>
 
     <repositories>
