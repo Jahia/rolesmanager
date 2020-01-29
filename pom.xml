@@ -55,7 +55,7 @@
     </parent>
 
     <artifactId>rolesmanager</artifactId>
-    <version>7.3.0-SNAPSHOT</version>
+    <version>8.0.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Jahia Roles Manager</name>
     <description>This is a custom module for running on a Jahia server.</description>
@@ -71,7 +71,7 @@
         <jahia-depends>default,serverSettings</jahia-depends>
         <jahia-deploy-on-site>system</jahia-deploy-on-site>
         <jahia-module-type>system</jahia-module-type>
-        <jahia-module-signature>MCwCFFLT7vCpLt0UX+SU0VnIsEHLGVWpAhQnY82f1Ncxa+LoQYW3pliKkSZITQ==</jahia-module-signature>
+        <jahia-module-signature>MCwCFC3Khho3F/ieodiesG6IzGN6Wr9RAhQNMLVHEO2pJmINPjeh2wJCBWDTsA==</jahia-module-signature>
     </properties>
 
     <repositories>
