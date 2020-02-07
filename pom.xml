@@ -68,7 +68,7 @@
     </scm>
 
     <properties>
-        <jahia-depends>dx-commons-webpack,jahia-ui-root,default,serverSettings</jahia-depends>
+        <jahia-depends>default,serverSettings</jahia-depends>
         <jahia-deploy-on-site>system</jahia-deploy-on-site>
         <jahia-module-type>system</jahia-module-type>
         <jahia-module-signature>MCwCFC3Khho3F/ieodiesG6IzGN6Wr9RAhQNMLVHEO2pJmINPjeh2wJCBWDTsA==</jahia-module-signature>
