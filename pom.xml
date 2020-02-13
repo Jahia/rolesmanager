@@ -72,7 +72,25 @@
         <jahia-deploy-on-site>system</jahia-deploy-on-site>
         <jahia-module-type>system</jahia-module-type>
         <jahia-module-signature>MCwCFC3Khho3F/ieodiesG6IzGN6Wr9RAhQNMLVHEO2pJmINPjeh2wJCBWDTsA==</jahia-module-signature>
+        <yarn.arguments>build:production</yarn.arguments>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jahia.modules</groupId>
+            <artifactId>dx-commons-webpack</artifactId>
+            <version>1.4.0-SNAPSHOT</version>
+            <type>json</type>
+            <classifier>manifest</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jahia.modules</groupId>
+            <artifactId>dx-commons-webpack</artifactId>
+            <version>1.4.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 
     <repositories>
         <repository>
@@ -88,4 +106,85 @@
             <url>https://devtools.jahia.com/nexus/content/groups/public</url>
         </repository>
     </repositories>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>src/main/resources/javascript/apps</directory>
+                            <includes>
+                                <include>*</include>
+                            </includes>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.8.0</version>
+                <executions>
+                    <execution>
+                        <id>npm install node and yarn</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>install-node-and-yarn</goal>
+                        </goals>
+                        <configuration>
+                            <nodeVersion>v11.11.0</nodeVersion>
+                            <yarnVersion>v1.19.1</yarnVersion>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>yarn install</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>yarn</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>yarn post-install</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>yarn</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>${yarn.arguments}</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <artifactItems>
+                        <artifactItem>
+                            <groupId>org.jahia.modules</groupId>
+                            <artifactId>dx-commons-webpack</artifactId>
+                            <type>json</type>
+                            <classifier>manifest</classifier>
+                        </artifactItem>
+                    </artifactItems>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
