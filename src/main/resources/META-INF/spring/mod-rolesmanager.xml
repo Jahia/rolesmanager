@@ -57,7 +57,7 @@
                     <map>
                         <entry key="jnt:virtualsite">
                             <list>
-                                <value>jContent,contributeMode,managers,wysiwyg-editor-toolbar</value>
+                                <value>jContent,managers,wysiwyg-editor-toolbar</value>
                                 <value>templates,components</value>
                             </list>
                         </entry>
@@ -83,7 +83,7 @@
                             <list>
                                 <value>site-admin</value>
                                 <value>repository-default</value>
-                                <value>jContent,contributeMode,managers,wysiwyg-editor-toolbar</value>
+                                <value>jContent,managers,wysiwyg-editor-toolbar</value>
                                 <value>templates,components</value>
                             </list>
                         </entry>
@@ -128,14 +128,14 @@
             <entry key="jnt:virtualsite">
                 <list>
                     <value>repository-default</value>
-                    <value>jContent,contributeMode,managers,wysiwyg-editor-toolbar</value>
+                    <value>jContent,managers,wysiwyg-editor-toolbar</value>
                     <value>templates,components</value>
                 </list>
             </entry>
             <entry key="jnt:modules">
                 <list>
                     <value>studioMode</value>
-                    <value>jContent,contributeMode,managers,wysiwyg-editor-toolbar</value>
+                    <value>jContent,managers,wysiwyg-editor-toolbar</value>
                     <value>templates,components</value>
                     <value>repository-default</value>
                 </list>
