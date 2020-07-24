@@ -106,6 +106,26 @@
                     </set>
                 </property>
             </bean>
+
+            <bean class="org.jahia.modules.rolesmanager.RoleType">
+                <property name="name" value="tools-role" />
+                <property name="privileged" value="false"/>
+                <property name="scopes">
+                    <set>
+                        <value>current</value>
+                        <value>/</value>
+                    </set>
+                </property>
+                <property name="permissionsGroups">
+                    <map>
+                        <entry key="nt:base">
+                            <list>
+                                <value>systemTools</value>
+                            </list>
+                        </entry>
+                    </map>
+                </property>
+            </bean>
         </list>
 
     </property>
