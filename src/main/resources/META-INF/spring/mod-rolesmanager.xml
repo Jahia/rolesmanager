@@ -108,7 +108,7 @@
             </bean>
 
             <bean class="org.jahia.modules.rolesmanager.RoleType">
-                <property name="name" value="tools-role" />
+                <property name="name" value="system-role" />
                 <property name="privileged" value="false"/>
                 <property name="scopes">
                     <set>
