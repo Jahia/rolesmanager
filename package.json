@@ -14,8 +14,8 @@
     "dev": "yarn webpack --watch",
     "webpack": "node --max_old_space_size=2048 ./node_modules/.bin/webpack",
     "build:analyze": "yarn build --analyze",
-    "build:production": "yarn build -p",
-    "build:production-analyze": "yarn build -p --analyze",
+    "build:production": "yarn build --mode=production",
+    "build:production-analyze": "yarn build --mode-production --analyze",
     "clean": "rimraf *.log src/main/resources/javascript/apps",
     "clean:all": "yarn clean && rimraf node_modules node",
     "lint": "./node_modules/.bin/eslint --ext js,jsx .",
@@ -27,8 +27,8 @@
     "@jahia/jahia-ui-root": "0.0.1"
   },
   "jahia": {
-    "apps": {
-      "jahia": "javascript/apps/jahia.bundle.js"
+    "remotes": {
+      "jahia": "javascript/apps/remoteEntry.js"
     }
   },
   "dependencies": {
@@ -52,7 +52,7 @@
     "@jahia/eslint-config": "^1.0.0-beta.20190920132338",
     "babel-jest": "^24.9.0",
     "babel-loader": "^8.0.6",
-    "clean-webpack-plugin": "^3.0.0",
+    "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^3.2.0",
     "eslint": "^6.8.0",

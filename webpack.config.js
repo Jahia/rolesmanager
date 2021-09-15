@@ -3,20 +3,13 @@ const webpack = require('webpack');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-
-// Get manifest
-const normalizedPath = require('path').join(__dirname, './target/dependency');
-let manifest = '';
-
-require('fs').readdirSync(normalizedPath).forEach(function (file) {
-    manifest = './target/dependency/' + file;
-    console.log('Server Settings module uses manifest: ' + manifest);
-});
+const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
+const shared = require("./webpack.shared")
 
 module.exports = (env, argv) => {
     let config = {
         entry: {
-            main: [path.resolve(__dirname, 'src/javascript/publicPath'), path.resolve(__dirname, 'src/javascript/index.js')]
+            main: path.resolve(__dirname, 'src/javascript/index.js')
         },
         output: {
             path: path.resolve(__dirname, 'src/main/resources/javascript/apps/'),
@@ -35,6 +28,10 @@ module.exports = (env, argv) => {
         module: {
             rules: [
                 {
+                    test: /\.m?js$/,
+                    type: 'javascript/auto'
+                },
+                {
                     test: /\.jsx?$/,
                     include: [path.join(__dirname, 'src')],
                     use: {
@@ -51,30 +48,54 @@ module.exports = (env, argv) => {
                     }
                 },
                 {
-                    test: /\.s[ac]ss$/i,
+                    test: /\.css$/,
+                    sideEffects: true,
+                    use: ['style-loader', 'css-loader']
+                },
+                {
+                    test: /\.scss$/i,
+                    sideEffects: true,
                     use: [
                         'style-loader',
+                        // Translates CSS into CommonJS
                         {
-                            loader:'css-loader',
+                            loader: 'css-loader',
                             options: {
-                                modules: true
+                                modules: {
+                                    mode: 'local'
+                                }
                             }
                         },
+                        // Compiles Sass to CSS
                         'sass-loader'
                     ]
+                },
+                {
+                    test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+                    use: [{
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name].[ext]',
+                            outputPath: 'fonts/'
+                        }
+                    }]
                 }
             ]
         },
         plugins: [
-            new webpack.DllReferencePlugin({
-                manifest: require(manifest)
+            new ModuleFederationPlugin({
+                name: "rolesmanager",
+                library: { type: "assign", name: "appShell.remotes.rolesmanager" },
+                filename: "remoteEntry.js",
+                exposes: {
+                    './init': './src/javascript/init',
+                },
+                remotes: {
+                    '@jahia/app-shell': 'appShellRemote'
+                },
+                shared
             }),
             new CleanWebpackPlugin({verbose: false}),
-            new webpack.ids.HashedModuleIdsPlugin({
-                hashFunction: 'sha256',
-                hashDigest: 'hex',
-                hashDigestLength: 20
-            }),
             new CopyWebpackPlugin({patterns: [{from: './package.json', to: ''}]})
         ],
         mode: argv.mode
