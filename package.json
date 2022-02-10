@@ -1,5 +1,5 @@
 {
-  "name": "@jahia/roleManager",
+  "name": "@jahia/rolesManager",
   "version": "0.0.1",
   "husky": {
     "hooks": {
