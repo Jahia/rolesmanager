@@ -1,5 +1,5 @@
 {
-  "name": "@jahia/siteSettings",
+  "name": "@jahia/roleManager",
   "version": "0.0.1",
   "husky": {
     "hooks": {

@@ -71,7 +71,7 @@
         <jahia-deploy-on-site>system</jahia-deploy-on-site>
         <jahia-module-type>system</jahia-module-type>
         <require-capability>osgi.extender;filter:="(osgi.extender=org.jahia.bundles.blueprint.extender.config)"</require-capability>
-        <jahia-module-signature>MC0CFQCKmQKByOm2ZB1jwB7hvxXMpDqxbgIUTtntwyYAJc58EondqvfhJB40Ww8=</jahia-module-signature>
+        <jahia-module-signature>MCwCFHMkkJKkg2bu1hjVrvAlM8CbiDIyAhQj9KolLYD1GcoyMN9cUDpjquJqoA==</jahia-module-signature>
         <yarn.arguments>build:production</yarn.arguments>
     </properties>
 
@@ -106,55 +106,55 @@
             </resource>
         </resources>
         <plugins>
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>src/main/resources/javascript/apps</directory>
-                            <includes>
-                                <include>*</include>
-                            </includes>
-                        </fileset>
-                    </filesets>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.8.0</version>
-                <executions>
-                    <execution>
-                        <id>npm install node and yarn</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>install-node-and-yarn</goal>
-                        </goals>
-                        <configuration>
-                            <nodeVersion>v14.16.0</nodeVersion>
-                            <yarnVersion>v1.22.11</yarnVersion>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>yarn install</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>yarn</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>yarn post-install</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>yarn</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>${yarn.arguments}</arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <artifactId>maven-clean-plugin</artifactId>-->
+<!--                <version>3.1.0</version>-->
+<!--                <configuration>-->
+<!--                    <filesets>-->
+<!--                        <fileset>-->
+<!--                            <directory>src/main/resources/javascript/apps</directory>-->
+<!--                            <includes>-->
+<!--                                <include>*</include>-->
+<!--                            </includes>-->
+<!--                        </fileset>-->
+<!--                    </filesets>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+<!--            <plugin>-->
+<!--                <groupId>com.github.eirslett</groupId>-->
+<!--                <artifactId>frontend-maven-plugin</artifactId>-->
+<!--                <version>1.8.0</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>npm install node and yarn</id>-->
+<!--                        <phase>generate-resources</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>install-node-and-yarn</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <nodeVersion>v14.16.0</nodeVersion>-->
+<!--                            <yarnVersion>v1.22.11</yarnVersion>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                    <execution>-->
+<!--                        <id>yarn install</id>-->
+<!--                        <phase>generate-resources</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>yarn</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                    <execution>-->
+<!--                        <id>yarn post-install</id>-->
+<!--                        <phase>generate-resources</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>yarn</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <arguments>${yarn.arguments}</arguments>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 </project>
