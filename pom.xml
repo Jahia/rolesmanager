@@ -67,7 +67,7 @@
     </scm>
 
     <properties>
-        <jahia-depends>default,serverSettings</jahia-depends>
+        <jahia-depends>serverSettings</jahia-depends>
         <jahia-deploy-on-site>system</jahia-deploy-on-site>
         <jahia-module-type>system</jahia-module-type>
         <require-capability>osgi.extender;filter:="(osgi.extender=org.jahia.bundles.blueprint.extender.config)"</require-capability>
