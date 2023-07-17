@@ -1,6 +1,6 @@
 {
   "name": "@jahia/rolesManager",
-  "version": "0.0.1",
+  "version": "8.6.0-SNAPSHOT",
   "husky": {
     "hooks": {
       "pre-push": "yarn lint:fix"
@@ -12,14 +12,14 @@
     "build": "yarn lint:fix && yarn webpack",
     "build:nolint": "yarn webpack",
     "dev": "yarn webpack --watch",
-    "webpack": "node --max_old_space_size=2048 ./node_modules/.bin/webpack",
+    "webpack": "node --max_old_space_size=2048 ./node_modules/webpack/bin/webpack.js",
     "build:analyze": "yarn build --analyze",
     "build:production": "yarn build --mode=production",
     "build:production-analyze": "yarn build --mode-production --analyze",
     "clean": "rimraf *.log src/main/resources/javascript/apps",
     "clean:all": "yarn clean && rimraf node_modules node",
-    "lint": "./node_modules/.bin/eslint --ext js,jsx .",
-    "lint:fix": "./node_modules/.bin/eslint --ext js,jsx --fix .",
+    "lint": "eslint --ext js,jsx .",
+    "lint:fix": "eslint --ext js,jsx --fix .",
     "sync-pom": "sync-pom-version --use-yarn"
   },
   "main": "index.js",
@@ -50,6 +50,7 @@
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.3.3",
     "@babel/runtime": "^7.5.4",
+    "@cyclonedx/webpack-plugin": "^3.6.1",
     "@jahia/eslint-config": "^1.0.0-beta.20190920132338",
     "babel-loader": "^8.0.6",
     "clean-webpack-plugin": "^4.0.0",
