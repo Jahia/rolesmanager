@@ -165,23 +165,29 @@
 
     <property name="permissionsMapping" >
         <map>
+            <!-- default permissions simplified -->
             <entry key="/permissions/repository-default/jcr:allBasicPermissions">
+                <list>
+                    <value>/permissions/repository-permissions</value>
+                </list>
+            </entry>
+            <entry key="/permissions/repository-default/jcr:allBasicPermissions/jcr:accessLevelPermissions">
                 <list>
                     <value>/permissions/repository-permissions/jcr:all_default</value>
                 </list>
             </entry>
-            <entry key="/permissions/repository-default/jcr:allBasicPermissions/jcr-mapped:access">
+            <entry key="/permissions/repository-default/jcr:allBasicPermissions/jcr:accessLevelPermissions/jcr-mapped:access">
                 <list>
                     <value>/permissions/repository-permissions/jcr:all_default/api-access</value>
                 </list>
             </entry>
-            <entry key="/permissions/repository-default/jcr:allBasicPermissions/jcr-mapped:read">
+            <entry key="/permissions/repository-default/jcr:allBasicPermissions/jcr:accessLevelPermissions/jcr-mapped:read">
                 <list>
                     <value>/permissions/repository-permissions/jcr:all_default/jcr:read_default</value>
                     <value>/permissions/repository-permissions/jcr:all_default/jcr:readAccessControl_default</value>
                 </list>
             </entry>
-            <entry key="/permissions/repository-default/jcr:allBasicPermissions/jcr-mapped:write">
+            <entry key="/permissions/repository-default/jcr:allBasicPermissions/jcr:accessLevelPermissions/jcr-mapped:write">
                 <list>
                     <value>/permissions/repository-permissions/jcr:all_default/jcr:write_default</value>
                     <value>/permissions/repository-permissions/jcr:all_default/jcr:lockManagement_default</value>
@@ -189,18 +195,25 @@
                     <value>/permissions/repository-permissions/jcr:all_default/jcr:nodeTypeManagement_default</value>
                 </list>
             </entry>
-            <entry key="/permissions/repository-default/jcr:allBasicPermissions/jcr-mapped:manageAcl">
+            <entry key="/permissions/repository-default/jcr:allBasicPermissions/jcr:accessLevelPermissions/jcr-mapped:manageAcl">
                 <list>
                     <value>/permissions/repository-permissions/jcr:all_default/jcr:modifyAccessControl_default</value>
                     <value>/permissions/repository-permissions/jcr:all_default/jcr:retentionManagement_default</value>
                     <value>/permissions/repository-permissions/jcr:all_default/jcr:lifecycleManagement_default</value>
                 </list>
             </entry>
-            <entry key="/permissions/repository-default/jcr-mapped:publish">
+            <entry key="/permissions/repository-default/jcr:allBasicPermissions/jcr-mapped:publish">
                 <list>
                     <value>/permissions/repository-permissions/publish</value>
                 </list>
             </entry>
+            <entry key="/permissions/repository-default/jcr:allBasicPermissions/jcr-mapped:clearLock">
+                <list>
+                    <value>/permissions/repository-permissions/clearLock</value>
+                </list>
+            </entry>
+
+            <!-- Live permissions simplified -->
             <entry key="/permissions/repository-live/jcr:allBasicPermissions">
                 <list>
                     <value>/permissions/repository-permissions/jcr:all_live</value>
