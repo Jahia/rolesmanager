@@ -1,6 +1,6 @@
 {
   "name": "@jahia/rolesManager",
-  "version": "8.6.0-SNAPSHOT",
+  "version": "8.6.0",
   "husky": {
     "hooks": {
       "pre-push": "yarn lint:fix"
