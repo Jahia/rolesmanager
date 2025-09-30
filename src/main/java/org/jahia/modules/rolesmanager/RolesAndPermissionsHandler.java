@@ -72,7 +72,7 @@ public class RolesAndPermissionsHandler implements Serializable {
     private static final long serialVersionUID = 7910715831938629654L;
 
     private static final Logger logger = LoggerFactory.getLogger(RolesAndPermissionsHandler.class);
-    
+
     private static final Pattern PATTERN_UNDERSCORE_DASH = Pattern.compile("[_-]");
 
     private static final Pattern PATTERN_UPPERCASE_LETTER = Pattern.compile("([A-Z])");
@@ -718,7 +718,7 @@ public class RolesAndPermissionsHandler implements Serializable {
     }
 
     private void populateTitleAndDescription(PermissionBean bean) {
-        String localName = bean.getName().contains(":") ? StringUtils.substringAfter(bean.getName(), ":") : bean.getName(); 
+        String localName = bean.getName().contains(":") ? StringUtils.substringAfter(bean.getName(), ":") : bean.getName();
         if (localName.contains(":")) {
             localName = StringUtils.substringAfter(localName, ":");
         }
@@ -843,7 +843,7 @@ public class RolesAndPermissionsHandler implements Serializable {
                 role.setProperty("j:permissionNames", permissions.get("current").toArray(new Value[permissions.get("current").size()]));
             } else {
                 if (key.equals("/")) {
-                    key = "root-access";
+                    key = "rootNode-access";
                 } else {
                     key = ISO9075.encode((key.startsWith("/") ? key.substring(1) : key).replace("/", "-")) + "-access";
                 }
