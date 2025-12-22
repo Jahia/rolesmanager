@@ -11,4 +11,5 @@ jobs:
     uses: Jahia/jahia-modules-action/.github/workflows/reusable-release-module.yml@v2
     secrets: inherit
     with:
+      job_container: "ghcr.io/jahia/jahia-docker-mvn-cache:8-jdk-noble-mvn-loaded"
       primary_release_branch: "master"
