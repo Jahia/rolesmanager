@@ -646,8 +646,7 @@ public class RolesAndPermissionsHandler implements Serializable {
     }
 
     private void setPermissionFlags(JCRNodeWrapper permissionNode, Map<String, PermissionBean> permissions, PermissionBean bean, List<String> permIds, List<String> inheritedPermIds, PermissionBean parentBean) throws RepositoryException {
-        if ((permIds != null && permIds.contains(permissionNode.getName()))
-                || (parentBean != null && parentBean.isSet())) {
+        if (isPermissionSet(permissionNode, permIds) || (parentBean != null && parentBean.isSet())) {
             bean.setSet(true);
             if (bean.getMappedPermissions() != null && bean.getMappedPermissions().containsKey(permissionNode.getPath())) {
                 bean.getMappedPermissions().get(permissionNode.getPath()).setSet(true);
@@ -658,8 +657,7 @@ public class RolesAndPermissionsHandler implements Serializable {
             }
         }
         parentBean = permissions.get(bean.getParentPath());
-        if ((inheritedPermIds != null && inheritedPermIds.contains(permissionNode.getName()))
-                || (parentBean != null && parentBean.isSuperSet())) {
+        if (isPermissionSet(permissionNode, inheritedPermIds) || (parentBean != null && parentBean.isSuperSet())) {
             bean.setSuperSet(true);
             if (bean.getMappedPermissions() != null && bean.getMappedPermissions().containsKey(permissionNode.getPath())) {
                 bean.getMappedPermissions().get(permissionNode.getPath()).setSuperSet(true);
@@ -669,6 +667,17 @@ public class RolesAndPermissionsHandler implements Serializable {
                 parentBean = permissions.get(parentBean.getParentPath());
             }
         }
+    }
+
+    private boolean isPermissionSet(JCRNodeWrapper permissionNode, List<String> permIds) throws RepositoryException {
+       if(permIds != null && permIds.contains(permissionNode.getName())) {
+           return  true;
+       }
+       JCRNodeWrapper parent = JCRContentUtils.getParentOfType(permissionNode, "jnt:permission");
+       if (parent != null) {
+              return isPermissionSet(parent, permIds);
+       }
+       return false;
     }
 
     private String getPermissionPath(JCRNodeWrapper permissionNode) {
