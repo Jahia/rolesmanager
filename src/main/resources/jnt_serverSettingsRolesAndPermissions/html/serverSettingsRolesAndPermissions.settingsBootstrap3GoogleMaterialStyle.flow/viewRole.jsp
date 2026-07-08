@@ -546,10 +546,10 @@
                                                             <tr>
                                                                 <td>
                                                                     <strong><a href="#" name="_eventId_viewRole"
-                                                                               onclick="viewRole('${subRole.uuid}')">${subRole.title}
-                                                                        (${subRole.name})</a></strong>
+                                                                               onclick="viewRole('${subRole.uuid}')">${fn:escapeXml(subRole.title)}
+                                                                        (${fn:escapeXml(subRole.name)})</a></strong>
                                                                 </td>
-                                                                <td>${subRole.description}</td>
+                                                                <td>${fn:escapeXml(subRole.description)}</td>
                                                             </tr>
                                                         </c:forEach>
                                                         </tbody>

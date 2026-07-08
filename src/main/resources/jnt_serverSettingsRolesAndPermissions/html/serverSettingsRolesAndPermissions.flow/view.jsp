@@ -152,10 +152,10 @@
                         <c:forEach var="i" begin="3" end="${role.depth}" step="1" varStatus="loopStatus3">
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         </c:forEach>
-                        <strong><a href="#" onclick="viewRole('${role.uuid}')">${role.title} (${role.name})</a></strong>
+                        <strong><a href="#" onclick="viewRole('${role.uuid}')">${fn:escapeXml(role.title)} (${fn:escapeXml(role.name)})</a></strong>
                     </td>
                     <td>
-                        ${role.description}
+                        ${fn:escapeXml(role.description)}
                     </td>
                     <td>
                         <a style="margin-bottom:0;" class="btn btn-small" title="${i18nCopy}" href="#copy" onclick="copyRole('${role.uuid}');">

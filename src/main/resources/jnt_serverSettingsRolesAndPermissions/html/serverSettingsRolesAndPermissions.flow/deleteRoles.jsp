@@ -50,10 +50,10 @@
                         <c:forEach var="i" begin="3" end="${role.depth}" step="1" varStatus="loopStatus3">
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         </c:forEach>
-                        <strong>${role.title} (${role.name})</strong>
+                        <strong>${fn:escapeXml(role.title)} (${fn:escapeXml(role.name)})</strong>
                     </td>
                     <td>
-                        ${role.description}
+                        ${fn:escapeXml(role.description)}
                     </td>
                 </tr>
             </c:forEach>
