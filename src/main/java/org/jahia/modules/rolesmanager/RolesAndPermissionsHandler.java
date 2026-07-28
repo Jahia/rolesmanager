@@ -208,10 +208,18 @@ public class RolesAndPermissionsHandler implements Serializable {
     public boolean copyRole(final String roleName, final String deepCopy, final String uuid, final MessageContext messageContext) throws RepositoryException {
         JCRSessionWrapper currentUserSession = getSession();
 
-        JCRNodeWrapper roleToCopy = currentUserSession.getNodeByIdentifier(uuid);
-        // the identifier comes from the request: it must designate a role, and the copy must land
-        // where roles live — this is the same node, in the same place, that addRole() would create
-        if (!roleToCopy.isNodeType("jnt:role") || !isUnderRolesRoot(roleToCopy.getParent().getPath())) {
+        // a copy lands beside its source, so the source must be a role that lives under /roles
+        JCRNodeWrapper roleToCopy;
+        try {
+            roleToCopy = currentUserSession.getNodeByIdentifier(uuid);
+        } catch (ItemNotFoundException e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Cannot find role " + uuid, e);
+            }
+            roleToCopy = null;
+        }
+        if (roleToCopy == null || !roleToCopy.isNodeType("jnt:role")
+                || !isUnderRolesRoot(roleToCopy.getParent().getPath())) {
             messageContext.addMessage(new MessageBuilder().source("roleName")
                     .error()
                     .code("rolesmanager.rolesAndPermissions.role.cannotBeCopied")
@@ -224,7 +232,6 @@ public class RolesAndPermissionsHandler implements Serializable {
             return false;
         }
 
-        // the copy runs on the caller's session, as addRole() already does for the node it creates
         boolean copy = roleToCopy.copy(roleToCopy.getParent().getPath(), newRoleName);
         JCRNodeWrapper copiedNode = currentUserSession.getNode(roleToCopy.getParent().getPath() + "/" + newRoleName);
         NodeIterator iterator = copiedNode.getNodes();
