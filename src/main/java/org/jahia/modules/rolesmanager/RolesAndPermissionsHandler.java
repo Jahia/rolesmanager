@@ -79,6 +79,8 @@ public class RolesAndPermissionsHandler implements Serializable {
 
     private static final String OTHER_PERMISSIONS_GROUP_MAME= "other";
 
+    private static final String ROLES_ROOT = "/roles";
+
     @Autowired
     private transient RoleTypeConfiguration roleTypes;
 
@@ -204,47 +206,57 @@ public class RolesAndPermissionsHandler implements Serializable {
     }
 
     public boolean copyRole(final String roleName, final String deepCopy, final String uuid, final MessageContext messageContext) throws RepositoryException {
-        final JCRSessionWrapper currentUserSession = getSession();
-        boolean copy = JCRTemplate.getInstance().doExecuteWithSystemSessionAsUser(currentUserSession.getUser(), currentUserSession.getWorkspace().getName(), null, new JCRCallback<Boolean>() {
-            @Override
-            public Boolean doInJCR(JCRSessionWrapper session) throws RepositoryException {
-                JCRNodeWrapper roleToCopy = session.getNodeByIdentifier(uuid);
+        JCRSessionWrapper currentUserSession = getSession();
 
-                String newRoleName = StringUtils.isNotEmpty(roleName) ? JCRContentUtils.generateNodeName(roleName) : roleName;
-                if (!testRoleName(newRoleName, messageContext, session)) {
-                    return false;
+        JCRNodeWrapper roleToCopy = currentUserSession.getNodeByIdentifier(uuid);
+        // the identifier comes from the request: it must designate a role, and the copy must land
+        // where roles live — this is the same node, in the same place, that addRole() would create
+        if (!roleToCopy.isNodeType("jnt:role") || !isUnderRolesRoot(roleToCopy.getParent().getPath())) {
+            messageContext.addMessage(new MessageBuilder().source("roleName")
+                    .error()
+                    .code("rolesmanager.rolesAndPermissions.role.cannotBeCopied")
+                    .build());
+            return false;
+        }
+
+        String newRoleName = StringUtils.isNotEmpty(roleName) ? JCRContentUtils.generateNodeName(roleName) : roleName;
+        if (!testRoleName(newRoleName, messageContext, currentUserSession)) {
+            return false;
+        }
+
+        // the copy runs on the caller's session, as addRole() already does for the node it creates
+        boolean copy = roleToCopy.copy(roleToCopy.getParent().getPath(), newRoleName);
+        JCRNodeWrapper copiedNode = currentUserSession.getNode(roleToCopy.getParent().getPath() + "/" + newRoleName);
+        NodeIterator iterator = copiedNode.getNodes();
+        boolean copyWithSubRoles = StringUtils.isNotEmpty(deepCopy);
+        while (iterator.hasNext()) {
+            JCRNodeWrapper subNode = (JCRNodeWrapper) iterator.next();
+            if (subNode.isNodeType("jnt:role")) {
+                if (copyWithSubRoles) {
+                    renameSubRole(subNode, newRoleName);
+                } else {
+                    subNode.remove();
                 }
-
-                boolean copy = roleToCopy.copy(roleToCopy.getParent().getPath(), newRoleName);
-                JCRNodeWrapper copiedNode = session.getNode(roleToCopy.getParent().getPath() + "/" + newRoleName);
-                NodeIterator iterator = copiedNode.getNodes();
-                boolean copyWithSubRoles = StringUtils.isNotEmpty(deepCopy);
-                while (iterator.hasNext()) {
-                    JCRNodeWrapper subNode = (JCRNodeWrapper) iterator.next();
-                    if (subNode.isNodeType("jnt:role")) {
-                        if (copyWithSubRoles) {
-                            renameSubRole(subNode, newRoleName);
-                        } else {
-                            subNode.remove();
-                        }
-                    }
-                }
-
-                session.save();
-
-                if (copy) {
-                    messageContext.addMessage(new MessageBuilder().source("roleName")
-                            .info()
-                            .code("rolesmanager.rolesAndPermissions.successfullyCopied")
-                            .args(roleToCopy.getName(), newRoleName)
-                            .build());
-                }
-
-                return copy;
             }
-        });
+        }
+
+        currentUserSession.save();
+
+        if (copy) {
+            messageContext.addMessage(new MessageBuilder().source("roleName")
+                    .info()
+                    .code("rolesmanager.rolesAndPermissions.successfullyCopied")
+                    .args(roleToCopy.getName(), newRoleName)
+                    .build());
+        }
 
         return copy;
+    }
+
+    private static boolean isUnderRolesRoot(String path) {
+        // a top-level role's parent IS /roles, so the exact match matters as much as the prefix;
+        // the trailing slash keeps /rolesomething out
+        return ROLES_ROOT.equals(path) || path.startsWith(ROLES_ROOT + "/");
     }
 
     protected void renameSubRole(JCRNodeWrapper subNode, String newRoleName) throws RepositoryException {
