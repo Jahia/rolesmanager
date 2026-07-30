@@ -79,6 +79,10 @@ public class RolesAndPermissionsHandler implements Serializable {
 
     private static final String OTHER_PERMISSIONS_GROUP_MAME= "other";
 
+    private static final String ROLES_ROOT = "/roles";
+
+    private static final String ROLE_NAME_FIELD = "roleName";
+
     @Autowired
     private transient RoleTypeConfiguration roleTypes;
 
@@ -204,47 +208,63 @@ public class RolesAndPermissionsHandler implements Serializable {
     }
 
     public boolean copyRole(final String roleName, final String deepCopy, final String uuid, final MessageContext messageContext) throws RepositoryException {
-        final JCRSessionWrapper currentUserSession = getSession();
-        boolean copy = JCRTemplate.getInstance().doExecuteWithSystemSessionAsUser(currentUserSession.getUser(), currentUserSession.getWorkspace().getName(), null, new JCRCallback<Boolean>() {
-            @Override
-            public Boolean doInJCR(JCRSessionWrapper session) throws RepositoryException {
-                JCRNodeWrapper roleToCopy = session.getNodeByIdentifier(uuid);
+        JCRSessionWrapper currentUserSession = getSession();
 
-                String newRoleName = StringUtils.isNotEmpty(roleName) ? JCRContentUtils.generateNodeName(roleName) : roleName;
-                if (!testRoleName(newRoleName, messageContext, session)) {
-                    return false;
-                }
-
-                boolean copy = roleToCopy.copy(roleToCopy.getParent().getPath(), newRoleName);
-                JCRNodeWrapper copiedNode = session.getNode(roleToCopy.getParent().getPath() + "/" + newRoleName);
-                NodeIterator iterator = copiedNode.getNodes();
-                boolean copyWithSubRoles = StringUtils.isNotEmpty(deepCopy);
-                while (iterator.hasNext()) {
-                    JCRNodeWrapper subNode = (JCRNodeWrapper) iterator.next();
-                    if (subNode.isNodeType("jnt:role")) {
-                        if (copyWithSubRoles) {
-                            renameSubRole(subNode, newRoleName);
-                        } else {
-                            subNode.remove();
-                        }
-                    }
-                }
-
-                session.save();
-
-                if (copy) {
-                    messageContext.addMessage(new MessageBuilder().source("roleName")
-                            .info()
-                            .code("rolesmanager.rolesAndPermissions.successfullyCopied")
-                            .args(roleToCopy.getName(), newRoleName)
-                            .build());
-                }
-
-                return copy;
+        // a copy lands beside its source, so the source must be a role that lives under /roles
+        JCRNodeWrapper roleToCopy;
+        try {
+            roleToCopy = currentUserSession.getNodeByIdentifier(uuid);
+        } catch (ItemNotFoundException e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Cannot find role " + uuid, e);
             }
-        });
+            roleToCopy = null;
+        }
+        if (roleToCopy == null || !roleToCopy.isNodeType(Constants.JAHIANT_ROLE)
+                || !isUnderRolesRoot(roleToCopy.getParent().getPath())) {
+            messageContext.addMessage(new MessageBuilder().source(ROLE_NAME_FIELD)
+                    .error()
+                    .code("rolesmanager.rolesAndPermissions.role.cannotBeCopied")
+                    .build());
+            return false;
+        }
+
+        String newRoleName = StringUtils.isNotEmpty(roleName) ? JCRContentUtils.generateNodeName(roleName) : roleName;
+        if (!testRoleName(newRoleName, messageContext, currentUserSession)) {
+            return false;
+        }
+
+        boolean copy = roleToCopy.copy(roleToCopy.getParent().getPath(), newRoleName);
+        JCRNodeWrapper copiedNode = currentUserSession.getNode(roleToCopy.getParent().getPath() + "/" + newRoleName);
+        NodeIterator iterator = copiedNode.getNodes();
+        boolean copyWithSubRoles = StringUtils.isNotEmpty(deepCopy);
+        while (iterator.hasNext()) {
+            JCRNodeWrapper subNode = (JCRNodeWrapper) iterator.next();
+            if (subNode.isNodeType(Constants.JAHIANT_ROLE)) {
+                if (copyWithSubRoles) {
+                    renameSubRole(subNode, newRoleName);
+                } else {
+                    subNode.remove();
+                }
+            }
+        }
+
+        currentUserSession.save();
+
+        if (copy) {
+            messageContext.addMessage(new MessageBuilder().source(ROLE_NAME_FIELD)
+                    .info()
+                    .code("rolesmanager.rolesAndPermissions.successfullyCopied")
+                    .args(roleToCopy.getName(), newRoleName)
+                    .build());
+        }
 
         return copy;
+    }
+
+    private static boolean isUnderRolesRoot(String path) {
+        // exact match for a top-level role, trailing slash so /rolesomething stays out
+        return ROLES_ROOT.equals(path) || path.startsWith(ROLES_ROOT + "/");
     }
 
     protected void renameSubRole(JCRNodeWrapper subNode, String newRoleName) throws RepositoryException {
@@ -261,7 +281,7 @@ public class RolesAndPermissionsHandler implements Serializable {
 
     private RoleBean createRoleBean(JCRNodeWrapper role, boolean getPermissions, boolean getSubRoles) throws RepositoryException {
         RoleBean roleBean = new RoleBean();
-        JCRNodeWrapper parentRole = JCRContentUtils.getParentOfType(role, "jnt:role");
+        JCRNodeWrapper parentRole = JCRContentUtils.getParentOfType(role, Constants.JAHIANT_ROLE);
         final String uuid = role.getIdentifier();
         roleBean.setUuid(uuid);
         roleBean.setParentUuid(parentRole != null ? parentRole.getIdentifier() : null);
@@ -347,7 +367,7 @@ public class RolesAndPermissionsHandler implements Serializable {
 
         // sub-roles
         if (getSubRoles) {
-            final List<JCRNodeWrapper> subRoles = JCRContentUtils.getNodes(role, "jnt:role");
+            final List<JCRNodeWrapper> subRoles = JCRContentUtils.getNodes(role, Constants.JAHIANT_ROLE);
             final List<RoleBean> subRoleBeans = new ArrayList<RoleBean>(subRoles.size());
             for (JCRNodeWrapper subRole : subRoles) {
                 subRoleBeans.add(createRoleBean(subRole, false, false));
@@ -414,7 +434,7 @@ public class RolesAndPermissionsHandler implements Serializable {
 
     private boolean testRoleName(String roleName, MessageContext messageContext, JCRSessionWrapper currentUserSession) throws RepositoryException {
         if (StringUtils.isEmpty(roleName)) {
-            messageContext.addMessage(new MessageBuilder().source("roleName")
+            messageContext.addMessage(new MessageBuilder().source(ROLE_NAME_FIELD)
                     .error()
                     .code("rolesmanager.rolesAndPermissions.role.noName")
                     .build());
@@ -422,7 +442,7 @@ public class RolesAndPermissionsHandler implements Serializable {
         }
 
         if (roleExists(roleName, currentUserSession)) {
-            messageContext.addMessage(new MessageBuilder().source("roleName")
+            messageContext.addMessage(new MessageBuilder().source(ROLE_NAME_FIELD)
                     .error()
                     .code("rolesmanager.rolesAndPermissions.role.exists")
                     .build());
@@ -456,7 +476,7 @@ public class RolesAndPermissionsHandler implements Serializable {
         } else {
             parent = currentUserSession.getNodeByIdentifier(parentRoleId);
         }
-        JCRNodeWrapper role = parent.addNode(roleName, "jnt:role");
+        JCRNodeWrapper role = parent.addNode(roleName, Constants.JAHIANT_ROLE);
         RoleType roleType = roleTypes.get(roleTypeString);
         role.setProperty("j:roleGroup", roleType.getName());
         role.setProperty("j:privilegedAccess", roleType.isPrivileged());
