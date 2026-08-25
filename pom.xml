@@ -73,7 +73,6 @@
         <require-capability>osgi.extender;filter:="(osgi.extender=org.jahia.bundles.blueprint.extender.config)"</require-capability>
         <jahia-module-signature>MCwCFGQTYS50QskgkpLFR0GEF0zAmUR3AhROepkVT6XmiSN+tCOy1TwAl71CwQ==</jahia-module-signature>
         <yarn.arguments>build:production</yarn.arguments>
-        <sonar.sources>src/javascript</sonar.sources>
     </properties>
 
     <dependencies>
