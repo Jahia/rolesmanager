@@ -13,3 +13,6 @@ updates:
       interval: "daily"
     allow:
       - dependency-type: "production"
+    # The Jahia parent sets the minimum Jahia version of the module.
+    ignore:
+      - dependency-name: "org.jahia.modules:jahia-modules"
